@@ -2,375 +2,464 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>Card • Pay over time</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Card</title>
 <style>
   :root{
-    --bg:#f3f4f6;
-    --card:#ffffff;
-    --ink:#0b1220;
-    --muted:#6b7280;
-    --brand:#0c1040;
-    --brand-ink:#e8ebff;
-    --accent:#0a0f7a;
-    --pill:#0c1040;
-    --shadow:0 10px 28px rgba(16,24,40,.15);
-    --radius:24px;
-    --t:.28s cubic-bezier(.2,.8,.2,1)
+    --bg:#f2f3f5; --ink:#0c1324; --muted:#6d7280; --brand:#0b0f3b;
+    --pill:#0b0f3b; --pill-bg:#e9ebf0; --card:#fff; --outline:#cfd5e1;
+    --accent:#0a0f3b; --primary:#0a0f3b; --primaryText:#fff;
+    --radius:22px; --t:.28s cubic-bezier(.2,.8,.2,1);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font:16px ui-sans-serif,system-ui,-apple-system,"SF Pro Text",Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased}
-  .app{max-width:480px;height:100svh;margin:0 auto;position:relative;overflow:hidden;background:var(--bg)}
-  .views{display:flex;width:200%;height:100%;transition:transform var(--t)}
-  .view{width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch}
-  .header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#f3f4f6,#f3f4f6 70%,transparent);padding:18px 18px 8px}
-  .title{font-size:36px;font-weight:900;letter-spacing:-.5px}
-  .icons{position:absolute;right:16px;top:12px;display:flex;gap:10px}
-  .ib{width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.07)}
-  .card{margin:14px; padding:18px 18px 22px;background:var(--card);border-radius:28px;box-shadow:var(--shadow)}
-  /* segmented */
-  .seg{background:#eef0f6;border-radius:999px;padding:8px;display:flex;gap:8px;position:relative;user-select:none}
-  .seg .bubble{position:absolute;left:8px;top:8px;bottom:8px;width:calc(50% - 8px);border-radius:999px;background:var(--pill);
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 6px 16px rgba(12,16,64,.35);transition:left var(--t)}
-  .seg[data-active="pif"] .bubble{left:calc(50% + 0px)}
-  .seg .tab{flex:1;padding:10px 14px;border-radius:999px;text-align:center;font-weight:800;position:relative;z-index:1;cursor:pointer}
-  .seg .tab{color:#111}
-  .seg[data-active="pot"] .tab[data-id="pot"],
-  .seg[data-active="pif"] .tab[data-id="pif"]{color:#fff}
-  .chip{margin:16px 0 6px;border:1.5px solid #e6e8ef;border-radius:999px;padding:12px 16px;font-weight:800;color:#111;display:flex;align-items:center;gap:10px}
+    font:15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  .app{max-width:430px;margin:0 auto;min-height:100svh;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px}
+  .topbar h1{margin:0;font-size:34px;letter-spacing:.2px}
+  .tb-icons{display:flex;gap:12px}
+  .ib{width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid #eceff4;display:grid;place-items:center}
+  .views{position:relative;flex:1;overflow:hidden}
+  .viewWrap{display:flex;width:200%;height:100%;transition:transform var(--t)}
+  .view{width:100%;height:100%;overflow:auto;padding:0 14px 90px}
+  .card{background:var(--card);border-radius:26px;padding:16px 16px 20px;margin:8px 6px 0;box-shadow:0 18px 40px rgba(12,19,36,.08)}
+  .switch{position:relative;background:#eef0f4;border-radius:999px;padding:8px}
+  .switchInner{display:grid;grid-template-columns:1fr 1fr;position:relative}
+  .thumb{position:absolute;inset:6px auto 6px 6px;width:calc(50% - 6px);border-radius:999px;background:#0c0f27;color:#fff;box-shadow:0 8px 20px rgba(12,19,36,.25);transition:transform var(--t)}
+  .thumb.r{transform:translateX(100%)}
+  .sw-btn{position:relative;z-index:1;border:0;background:transparent;padding:12px 8px;border-radius:999px;
+    font-weight:800;color:#fff}
+  .sw-btn:nth-child(2){color:#222}
+  .chip{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;padding:12px 14px;border-radius:999px;font-weight:800}
   .chip svg{width:18px;height:18px}
-  .big{font-size:62px;line-height:1;font-weight:900;letter-spacing:-1.2px;margin:10px 2px 18px}
-  .cta{display:block;width:100%;border:0;border-radius:999px;background:#0b0f4f;color:#fff;font-weight:900;padding:18px 20px;font-size:18px}
-  .muted{color:var(--muted)}
-  /* Pay in full content */
-  .acctChip{display:inline-flex;align-items:center;gap:10px;border:1.5px solid #e1e4ec;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
-  .acctChip svg{width:18px;height:18px}
-  .outlineBtn{display:block;width:100%;border-radius:999px;border:2px solid #0b0f4f;background:transparent;color:#0b0f4f;font-weight:900;padding:16px 18px;text-align:center}
-  .pifCenter{display:grid;place-items:center;text-align:center}
-  .pifBig{font-size:54px;line-height:1;font-weight:900;letter-spacing:-.6px;margin:14px 0 6px}
-  .pifWrap{margin:12px 2px 6px}
-  /* bottom tabs */
-  .tabs{position:sticky;bottom:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:8px 2px 10px}
-  .tabs .t{display:flex;flex-direction:column;align-items:center;gap:6px;color:#111}
-  .tabs .t svg{width:24px;height:24px}
-  .tabs .t.active{color:#0b0f4f;font-weight:800}
-  /* Manage view */
-  .manageWrap{padding:14px}
-  .manageCard{background:#fff;border-radius:20px;padding:18px 18px 24px;box-shadow:var(--shadow)}
-  .manageTitle{font-size:28px;font-weight:900;margin:10px 0 14px}
-  .tabsMan{display:flex;gap:28px;margin:0 2px 12px;border-bottom:2px solid #e9eaf0}
-  .tabsMan .m{padding:12px 0;font-weight:800;position:relative}
-  .tabsMan .m.active::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;background:#0b0f4f;border-radius:3px}
-  /* sheet (plan a purchase) */
-  .sheet{position:fixed;inset:0;display:grid;place-items:end center;pointer-events:none;z-index:20}
-  .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--t)}
-  .panel{width:100%;max-width:480px;background:#fff;border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform var(--t);box-shadow:0 -20px 36px rgba(0,0,0,.25);max-height:88vh;display:flex;flex-direction:column}
+  .power{margin:16px 0 12px}
+  .big{font-size:64px;line-height:1;font-weight:900;letter-spacing:-.5px;margin:8px 10px}
+  .cta{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;
+    font-weight:900;padding:16px;margin:10px 0 8px}
+  .subtle{color:var(--muted);text-align:center;margin:0 10px 4px}
+  .outline{display:block;width:100%;border-radius:999px;background:#fff;border:2px solid #0a0f3b;color:#0a0f3b;font-weight:900;padding:14px}
+  .center{display:flex;justify-content:center}
+  .linkish{color:#0a0f3b;text-decoration:none}
+  .moneyRow{display:flex;justify-content:center}
+  .row{display:flex;gap:10px;align-items:center}
+  .row a{color:inherit;text-decoration:none}
+  .bankTag{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;border-radius:999px;padding:12px 16px;font-weight:800}
+  .bankTag svg{width:18px;height:18px}
+  /* bottom nav */
+  .tabs{position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6ee;display:flex;gap:2px;justify-content:space-around;padding:8px 6px;z-index:2}
+  .tab{flex:1;text-align:center;padding:8px 0;color:#4b5160;text-decoration:none;font-weight:800}
+  .tab.active{color:#0a0f3b}
+  /* Manage */
+  .manage h2{margin:18px 10px 8px}
+  .seg{display:flex;gap:26px;margin:12px 10px;border-bottom:2px solid #e6e9f1}
+  .seg button{appearance:none;border:0;background:transparent;padding:12px 0;font-weight:800;color:#0a0f3b;position:relative}
+  .seg button::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:3px;background:#0a0f3b;border-radius:2px}
+  .empty{color:#6c7486;margin:26px 12px 0}
+  /* Sheet */
+  .sheet{position:fixed;inset:0;display:grid;place-items:end center;pointer-events:none;z-index:30}
   .sheet.active{pointer-events:auto}
+  .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--t)}
   .sheet.active .dim{opacity:1}
+  .panel{width:100%;max-width:430px;background:#fff;border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform var(--t);box-shadow:0 -20px 36px rgba(12,19,36,.25)}
   .sheet.active .panel{transform:translateY(0)}
-  .panelHead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eef0f3}
-  .xbtn{width:36px;height:36px;border-radius:12px;border:0;background:#eef1f6;font-size:18px;font-weight:900;display:grid;place-items:center}
-  .panelTitle{flex:1;text-align:center;font-weight:900;font-size:22px}
-  .panelBody{padding:14px 16px 16px;overflow:auto}
-  .label{font-size:14px;font-weight:800;margin:10px 2px 6px;color:#111}
-  .input{width:100%;padding:14px 14px;border:1.5px solid #e1e4ec;border-radius:14px;font:inherit}
-  .amountInput{border:0;border-bottom:2px solid #e1e4ec;border-radius:0;padding:8px 2px 10px;margin:2px 0 8px;width:100%;font-weight:900;font-size:44px;letter-spacing:-.5px;outline:none}
-  .helper{font-size:13px;color:var(--muted);margin-top:4px}
-  .panelFoot{position:sticky;bottom:0;background:#0b0f4f;color:#fff;border-radius:14px;margin:8px 0 0;padding:14px 16px;text-align:center;font-weight:900}
-  .panelFoot[disabled]{opacity:.4}
-  .center{display:grid;place-items:center;gap:12px;padding:10px 8px 6px;text-align:center}
-  .spinner{width:22px;height:22px;border-radius:50%;border:3px solid #e9ecff;border-top-color:#0b0f4f;animation:spin 1s linear infinite}
+  .head{display:flex;align-items:center;justify-content:center;padding:12px 14px 2px;position:relative}
+  .x{position:absolute;left:12px;top:8px;width:40px;height:40px;border-radius:14px;border:0;background:#edf0f6;font-size:20px;font-weight:900}
+  .title{font-size:22px;font-weight:900;margin:6px 0 8px}
+  .pad{padding:6px 16px 18px}
+  .ask{margin:16px 0 6px;font-weight:900}
+  .inp{width:100%;border:1px solid #d9e0ec;border-radius:14px;padding:14px 14px;font:inherit}
+  .barCta{position:sticky;bottom:0;background:#0a0f3b;color:#fff;font-weight:900;border:0;padding:16px;width:100%}
+  .bar{position:sticky;bottom:0;display:flex}
+  .helper{color:#6b7184;margin:8px 0 0}
+  .pages{display:flex;width:300%;transition:transform var(--t)}
+  .page{width:100%}
+  .spinner{width:30px;height:30px;border-radius:50%;border:4px solid #e7eaf2;border-top-color:#0a0f3b;animation:spin 1s linear infinite;margin-left:auto}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .plansTitle{font-weight:900;margin:4px 2px 10px}
-  .plan{background:#fff;border:1.5px solid #e5e7ef;border-radius:18px;padding:16px 14px 14px;margin:10px 2px;box-shadow:0 6px 16px rgba(16,24,40,.05)}
-  .planHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-  .badge{background:#eef1ff;color:#0b0f4f;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900}
-  .per{font-size:34px;font-weight:900;letter-spacing:-.3px;margin:6px 0 6px}
-  .sub{font-size:14px;color:#5b6170;font-weight:700}
-  .down{margin-top:8px;font-weight:900}
-  .selectBtn{margin-top:12px;width:100%;border:0;background:#0b0f4f;color:#fff;border-radius:12px;padding:12px 14px;font-weight:900}
-
-  /* animations/simple fades for mode swap */
-  .hidden{display:none}
-  .fadeIn{animation:fadeIn var(--t) ease}
-  .fadeOut{animation:fadeOut .14s ease}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  @keyframes fadeOut{from{opacity:1}to{opacity:0}}
-
-  /* nav transitions */
-  .pos-0 .views{transform:translateX(0%)} 
-  .pos-1 .views{transform:translateX(-50%)}
+  /* plans list */
+  .plans{padding:0 16px 20px}
+  .plan{background:#fff;border:1px solid #e6eaf2;border-radius:20px;padding:14px 14px 16px;margin:12px 0;box-shadow:0 10px 26px rgba(12,19,36,.06)}
+  .plan .hdr{display:flex;justify-content:space-between;align-items:center}
+  .pill{font-size:12px;border-radius:999px;background:#eef1f6;padding:6px 10px;font-weight:900}
+  .price{font-size:34px;font-weight:900;margin:8px 0 2px}
+  .small{color:#6a7285;font-weight:700}
+  .select{display:block;width:100%;background:#0a0f3b;color:#fff;border:0;border-radius:12px;font-weight:900;padding:12px;margin-top:12px}
+  .based{color:#6b7280;text-align:center;margin:12px 0 20px}
+  /* Activate sheet (full) */
+  .fullSheet .panel{height:92svh} /* almost full, leaves a bit of space at top */
+  .subviews{display:flex;width:200%;transition:transform var(--t)}
+  .detailWrap{padding:12px 16px 26px}
+  .box{background:#fff;border:1px solid #e4e8f2;border-radius:18px;padding:14px 14px 10px;margin:10px 0}
+  .box h4{margin:2px 0 8px;font-size:16px}
+  .line{display:flex;justify-content:space-between;margin:8px 0}
+  .agree{display:flex;gap:10px;align-items:flex-start;margin:8px 0 0;color:#111}
+  .agree input{transform:translateY(2px) scale(1.2)}
+  .bigbtn{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;font-weight:900;padding:16px;margin:16px 0 24px}
+  .bigbtn:disabled{opacity:.5}
+  .dates{display:flex;gap:16px;margin-top:8px}
+  .dot{width:40px;height:40px;border-radius:999px;border:5px solid #e1e5f1;border-right-color:#0a0f3b}
+  .summaryTitle{font-size:18px;font-weight:900;margin-bottom:6px}
 </style>
 </head>
 <body>
-<div class="app pos-0" id="app">
-  <div class="views">
-    <!-- CARD VIEW -->
-    <section class="view" id="card">
-      <div class="header">
-        <div class="title">Card</div>
-        <div class="icons">
-          <div class="ib">⚙️</div>
-          <div class="ib">👁️</div>
-          <div class="ib">💬</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <!-- Segmented control -->
-        <div class="seg" id="seg" data-active="pot" aria-label="Choose payoff mode">
-          <div class="bubble" aria-hidden="true"></div>
-          <div class="tab" data-id="pot">Pay over time</div>
-          <div class="tab" data-id="pif">Pay in full</div>
-        </div>
-
-        <!-- PAY OVER TIME CONTENT -->
-        <div id="potView" class="mode">
-          <div class="chip">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#0b0f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-            Purchasing power
-          </div>
-          <div class="big">$11,910</div>
-          <button class="cta" id="openPlanner">Plan a purchase</button>
-        </div>
-
-        <!-- PAY IN FULL CONTENT -->
-        <div id="pifView" class="mode hidden">
-          <div class="pifWrap">
-            <div class="acctChip" id="acctLink" role="button" tabindex="0" aria-label="Open Sapphire Checking">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#0b0f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 10l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <path d="M9 22V12h6v10"/>
-              </svg>
-              Sapphire Checking
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9aa0b2" stroke-width="2" style="margin-left:6px">
-                <path d="M9 18l6-6-6-6"/>
-              </svg>
-            </div>
-          </div>
-          <div class="pifCenter">
-            <div class="pifBig">$298.04</div>
-            <div class="muted" style="margin:2px 0 18px">Available balance</div>
-            <a class="outlineBtn" id="goBtn" role="button">Go</a>
-          </div>
-        </div>
-      </div>
-
-      <div style="height:28vh"></div>
-    </section>
-
-    <!-- MANAGE VIEW -->
-    <section class="view" id="manage">
-      <div class="header"><div class="title">Manage</div></div>
-      <div class="manageWrap">
-        <div class="manageCard">
-          <div class="tabsMan">
-            <div class="m active">Active</div>
-          </div>
-          <div class="manageTitle">Your purchases are paid off</div>
-          <div class="muted">Explore exclusive deals and get flexible payment plans at top stores.</div>
-        </div>
-      </div>
-      <div style="height:30vh"></div>
-    </section>
+<div class="app">
+  <div class="topbar">
+    <h1>Card</h1>
+    <div class="tb-icons">
+      <div class="ib">⚙️</div>
+      <div class="ib">👁️</div>
+      <div class="ib">💬</div>
+    </div>
   </div>
 
-  <!-- Tabs -->
-  <nav class="tabs" id="tabs">
-    <div class="t active" data-view="card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" rx="2" ry="2" width="18" height="12"></rect><path d="M3 10h18"/></svg>
-      <div>Card</div>
+  <div class="views">
+    <div class="viewWrap" id="viewWrap">
+      <!-- CARD VIEW -->
+      <section class="view">
+        <div class="card">
+          <!-- switcher -->
+          <div class="switch">
+            <div class="thumb" id="thumb"></div>
+            <div class="switchInner">
+              <button class="sw-btn" id="btnOver">Pay over time</button>
+              <button class="sw-btn" id="btnFull" style="font-weight:900;color:#0a0f3b">Pay in full</button>
+            </div>
+          </div>
+
+          <!-- slider pages for the card content -->
+          <div class="pages" id="payPages" style="margin-top:14px">
+            <!-- Pay over time -->
+            <div class="page">
+              <div class="power">
+                <div class="chip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h7l-1 8 10-12h-7z"/></svg>
+                  Purchasing power
+                </div>
+              </div>
+              <div class="big" id="pp">$11,910</div>
+              <button class="cta" id="planBtn">Plan a purchase</button>
+            </div>
+
+            <!-- Pay in full -->
+            <div class="page">
+              <div class="center">
+                <a class="bankTag linkish" id="bankLink" href="https://notshloakrblx.github.io/savings-checking-dashboard/">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 10h18L12 4 3 10zM4 10v8M20 10v8M2 18h20"/></svg>
+                  Sapphire Checking
+                </a>
+              </div>
+              <div class="big">$298.04</div>
+              <p class="subtle">Available balance</p>
+              <a class="outline center" href="https://notshloakrblx.github.io/savings-checking-dashboard/">Go</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MANAGE VIEW -->
+      <section class="view manage">
+        <h2 style="margin:14px 12px 0">Manage</h2>
+        <div class="seg"><button>Active</button></div>
+        <div class="empty">
+          <h3>Your purchases are paid off</h3>
+          <p>Explore exclusive deals and get flexible payment plans at top stores.</p>
+        </div>
+      </section>
     </div>
-    <div class="t" data-view="manage">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"></circle><path d="M20 21a8 8 0 10-16 0"/></svg>
-      <div>Manage</div>
-    </div>
-  </nav>
+  </div>
+
+  <!-- bottom tabs -->
+  <div class="tabs">
+    <a class="tab active" id="tabCard" href="#">Card</a>
+    <a class="tab" id="tabManage" href="#">Manage</a>
+  </div>
 </div>
 
-<!-- PLAN A PURCHASE SHEET -->
+<!-- PLAN SHEET -->
 <div class="sheet" id="sheet">
   <div class="dim" id="dim"></div>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-    <div class="panelHead">
-      <button class="xbtn" id="closeX">✕</button>
-      <div class="panelTitle" id="sheetTitle">Plan a purchase</div>
-      <div style="width:36px"></div>
-    </div>
-
-    <div class="panelBody" id="steps">
-      <!-- Step 1 -->
-      <div class="step" data-step="merchant">
-        <div class="label">Merchant</div>
-        <input id="merchant" class="input" placeholder="e.g., Amazon" autocomplete="off"/>
-        <div class="helper">Where are you shopping?</div>
-        <button class="panelFoot" id="toAmount" disabled>Continue</button>
+  <div class="panel">
+    <div class="head"><button class="x" id="closeX">×</button><div class="title" id="sheetTitle">Plan a purchase</div></div>
+    <div class="pages" id="pages">
+      <!-- Q1 -->
+      <div class="page">
+        <div class="pad">
+          <div class="ask">Merchant</div>
+          <input id="merchant" class="inp" placeholder="e.g., Amazon"/>
+        </div>
+        <div class="bar"><button class="barCta" id="toQ2">Continue</button></div>
       </div>
-
-      <!-- Step 2 -->
-      <div class="step" data-step="amount" style="display:none">
-        <div class="label">Purchase amount</div>
-        <input id="amount" class="amountInput" inputmode="decimal" pattern="[0-9]*" placeholder="0.00"/>
-        <div class="helper">Numbers only. You’ll see plans next.</div>
-        <button class="panelFoot" id="toLoading" disabled>Continue</button>
+      <!-- Q2 -->
+      <div class="page">
+        <div class="pad">
+          <div class="ask">Purchase amount</div>
+          <input id="amount" class="inp" inputmode="decimal" pattern="[0-9]*" placeholder="0.00"/>
+          <p class="helper">Numbers only. You’ll see plans next.</p>
+        </div>
+        <div class="bar"><button class="barCta" id="toLoading">Continue</button></div>
       </div>
-
       <!-- Loading -->
-      <div class="step" data-step="loading" style="display:none">
-        <div class="center" style="margin-top:12px">
+      <div class="page">
+        <div class="pad" style="display:flex;align-items:center;gap:14px">
+          <div>
+            <div class="title" style="margin:0 0 6px" id="loadingTitle">Plans for …</div>
+            <div class="helper">Finding plans for you</div>
+          </div>
           <div class="spinner" aria-hidden="true"></div>
-          <div style="font-weight:900;font-size:22px" id="loadingTitle">Finding plans for you</div>
-          <div class="muted">This just takes a moment.</div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <!-- Plans -->
-      <div class="step" data-step="plans" style="display:none">
-        <div class="plansTitle">Plans</div>
-        <div id="plansList"></div>
-        <div class="helper" id="basis"></div>
+<!-- PLANS SHEET -->
+<div class="sheet" id="plansSheet">
+  <div class="dim" id="plansDim"></div>
+  <div class="panel">
+    <div class="head">
+      <button class="x" id="plansClose">×</button>
+      <div class="title" id="plansTitle">Plans</div>
+    </div>
+    <div class="plans" id="plansWrap"></div>
+    <p class="based" id="basedNote"></p>
+  </div>
+</div>
+
+<!-- ACTIVATE SHEET (full) -->
+<div class="sheet fullSheet" id="activateSheet">
+  <div class="dim" id="actDim"></div>
+  <div class="panel">
+    <div class="head">
+      <button class="x" id="actClose">×</button>
+      <div class="title">Review and activate your plan</div>
+    </div>
+
+    <div class="subviews" id="actPages">
+      <div class="page">
+        <div class="detailWrap" id="actContent">
+          <!-- filled by JS -->
+        </div>
       </div>
+      <div class="page"><!-- reserved if we ever add more --></div>
     </div>
   </div>
 </div>
 
 <script>
 (()=>{
-  const app=document.getElementById('app');
-  // bottom tabs
-  document.querySelectorAll('#tabs .t').forEach(t=>{
-    t.addEventListener('click',()=>{
-      document.querySelectorAll('#tabs .t').forEach(x=>x.classList.remove('active'));
-      t.classList.add('active');
-      const v=t.dataset.view==='manage'?1:0;
-      app.className='app pos-'+v;
-    });
-  });
 
-  /* Segmented control + modes */
-  const seg = document.getElementById('seg');
-  const potView = document.getElementById('potView');
-  const pifView = document.getElementById('pifView');
+  /* view switch */
+  const viewWrap = document.getElementById('viewWrap');
+  const tabCard = document.getElementById('tabCard');
+  const tabManage = document.getElementById('tabManage');
+  tabCard.addEventListener('click', (e)=>{e.preventDefault(); viewWrap.style.transform='translateX(0%)'; tabCard.classList.add('active'); tabManage.classList.remove('active');});
+  tabManage.addEventListener('click', (e)=>{e.preventDefault(); viewWrap.style.transform='translateX(-50%)'; tabManage.classList.add('active'); tabCard.classList.remove('active');});
 
-  function swap(to){
-    if(to==='pot'){
-      seg.setAttribute('data-active','pot');
-      pifView.classList.add('fadeOut');
-      setTimeout(()=>{ pifView.classList.add('hidden'); pifView.classList.remove('fadeOut'); potView.classList.remove('hidden'); potView.classList.add('fadeIn'); setTimeout(()=>potView.classList.remove('fadeIn'),300); },120);
-    }else{
-      seg.setAttribute('data-active','pif');
-      potView.classList.add('fadeOut');
-      setTimeout(()=>{ potView.classList.add('hidden'); potView.classList.remove('fadeOut'); pifView.classList.remove('hidden'); pifView.classList.add('fadeIn'); setTimeout(()=>pifView.classList.remove('fadeIn'),300); },120);
-    }
+  /* pay over time / pay in full switcher */
+  const pages = document.getElementById('payPages');
+  const btnOver = document.getElementById('btnOver');
+  const btnFull = document.getElementById('btnFull');
+  const thumb = document.getElementById('thumb');
+  let mode='over';
+  function setMode(m){
+    mode=m;
+    pages.style.transform = (m==='over')?'translateX(0%)':'translateX(-50%)';
+    thumb.classList.toggle('r', m==='full');
   }
+  btnOver.addEventListener('click', ()=>setMode('over'));
+  btnFull.addEventListener('click', ()=>setMode('full'));
 
-  seg.querySelectorAll('.tab').forEach(tab=>{
-    tab.addEventListener('click',()=>swap(tab.dataset.id));
-  });
+  /* plan bottom sheet (wizard) */
+  const sheet = document.getElementById('sheet');
+  const dim = document.getElementById('dim');
+  const closeX = document.getElementById('closeX');
+  const planBtn = document.getElementById('planBtn');
+  const wizardPages = document.getElementById('pages');
+  const toQ2 = document.getElementById('toQ2');
+  const toLoading = document.getElementById('toLoading');
+  const merchantEl = document.getElementById('merchant');
+  const amountEl = document.getElementById('amount');
+  const loadingTitle = document.getElementById('loadingTitle');
+  const sheetTitle = document.getElementById('sheetTitle');
 
-  // External link for Pay in full
-  const SAV_URL = 'https://notshloakrblx.github.io/savings-checking-dashboard/';
-  const acctLink = document.getElementById('acctLink');
-  const goBtn = document.getElementById('goBtn');
-  const go = ()=>{ window.location.href = SAV_URL; };
-  acctLink.addEventListener('click',go);
-  acctLink.addEventListener('keypress',e=>{ if(e.key==='Enter') go(); });
-  goBtn.addEventListener('click',go);
-
-  /* Sheet logic (Pay over time flow) */
-  const sheet=document.getElementById('sheet');
-  const dim=document.getElementById('dim');
-  const closeX=document.getElementById('closeX');
-  const openPlanner=document.getElementById('openPlanner');
-
-  const stepsWrap=document.getElementById('steps');
-  const setStep=(name)=>{
-    stepsWrap.querySelectorAll('.step').forEach(s=>s.style.display = (s.dataset.step===name)?'block':'none');
-  };
-  function openSheet(){ sheet.classList.add('active'); setStep('merchant'); document.getElementById('merchant').focus(); }
+  function openSheet(){ sheet.classList.add('active'); wizardPages.style.transform='translateX(0%)'; sheetTitle.textContent='Plan a purchase'; merchantEl.value=''; amountEl.value=''; }
   function closeSheet(){ sheet.classList.remove('active'); }
+  planBtn.addEventListener('click', openSheet);
+  dim.addEventListener('click', closeSheet); closeX.addEventListener('click', closeSheet);
 
-  openPlanner.addEventListener('click',openSheet);
-  dim.addEventListener('click',closeSheet); closeX.addEventListener('click',closeSheet);
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSheet(); });
-
-  // Step 1
-  const merch=document.getElementById('merchant');
-  const toAmount=document.getElementById('toAmount');
-  merch.addEventListener('input',()=>{ toAmount.disabled = merch.value.trim().length<1; });
-  toAmount.addEventListener('click',()=>{ setStep('amount'); amt.focus(); });
-
-  // Step 2
-  const amt=document.getElementById('amount');
-  const toLoading=document.getElementById('toLoading');
-  function parseAmount(){ const n = parseFloat((amt.value||'').replace(/[^\d.]/g,'')); return isFinite(n)? +(n.toFixed(2)) : NaN; }
-  amt.addEventListener('input',()=>{ toLoading.disabled = !(parseAmount() > 0); });
-
-  toLoading.addEventListener('click',()=>{
-    setStep('loading');
-    document.getElementById('loadingTitle').textContent = `Finding plans for ${merch.value.trim()||'you'}`;
-    setTimeout(()=>{ buildPlans(); setStep('plans'); },3000);
+  toQ2.addEventListener('click', ()=>{
+    wizardPages.style.transform='translateX(-33.3333%)';
+    setTimeout(()=>{ document.getElementById('amount').focus(); },220);
   });
+
+  toLoading.addEventListener('click', ()=>{
+    const m = (merchantEl.value||'').trim() || 'Store';
+    const raw = (amountEl.value||'0').replace(/[^\d.]/g,'');
+    const amt = Math.max(0, parseFloat(raw||'0'));
+    if(!isFinite(amt) || amt<=0){ amountEl.focus(); return; }
+    current.merchant = m;
+    current.amount = Math.round(amt*100)/100;
+    loadingTitle.textContent = `Plans for ${m}`;
+    wizardPages.style.transform='translateX(-66.6667%)';
+    setTimeout(()=>{ closeSheet(); showPlans(); }, 3000); // 3s “finding plans”
+  });
+
+  /* plans sheet */
+  const plansSheet = document.getElementById('plansSheet');
+  const plansDim = document.getElementById('plansDim');
+  const plansClose = document.getElementById('plansClose');
+  const plansTitle = document.getElementById('plansTitle');
+  const plansWrap = document.getElementById('plansWrap');
+  const basedNote = document.getElementById('basedNote');
+
+  plansDim.addEventListener('click', ()=>plansSheet.classList.remove('active'));
+  plansClose.addEventListener('click', ()=>plansSheet.classList.remove('active'));
+
+  const current = {merchant:'', amount:0};
 
   function fmt(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD'}); }
 
-  function buildPlans(){
-    const m = merch.value.trim() || 'your merchant';
-    const a = parseAmount()||0;
-    const list = document.getElementById('plansList');
-    list.innerHTML = '';
+  function makePlans(amt){
     const items=[];
-
-    // Bi-weekly (pay in 4, 0% APR)
-    const biPay = +(a/4).toFixed(2);
+    // Bi-weekly (pay in 4)
+    const p4 = +(amt/4).toFixed(2);
     items.push({
-      title:'Bi-weekly (Pay in 4)',
-      apr:'0% APR',
-      per:`${fmt(biPay)} x 4`,
-      sub:`Every 2 weeks • Total ${fmt(a)}`,
-      down:`Downpayment today ${fmt(biPay)}`
+      id:'pay4',
+      name:'Bi-weekly (Pay in 4)',
+      apr:0,
+      payments:4,
+      cadence:'Every 2 weeks',
+      per:p4,
+      total:+(p4*4).toFixed(2),
+      downpayment:p4,
+      tag:'0% APR'
     });
-
     // 6 months (20%)
-    const tot6 = +(a*1.20).toFixed(2);
+    const total6 = +(amt*1.20).toFixed(2);
+    const per6 = +(total6/6).toFixed(2);
     items.push({
-      title:'6 months',
-      apr:'20% APR',
-      per:`${fmt(tot6/6)} / mo`,
-      sub:`6 payments • Total ${fmt(tot6)}`
+      id:'m6',
+      name:'6 months',
+      apr:20,
+      payments:6,
+      cadence:'6 payments',
+      per:per6,
+      total:total6,
+      downpayment:per6,
+      tag:'20% APR'
     });
-
-    // 12 months if >= $100
-    if(a>=100){
-      const tot12 = +(a*1.25).toFixed(2);
+    if(amt>=100){
+      const total12 = +(amt*1.25).toFixed(2);
+      const per12 = +(total12/12).toFixed(2);
       items.push({
-        title:'12 months',
-        apr:'25% APR',
-        per:`${fmt(tot12/12)} / mo`,
-        sub:`12 payments • Total ${fmt(tot12)}`
+        id:'m12',
+        name:'12 months',
+        apr:25,
+        payments:12,
+        cadence:'12 payments',
+        per:per12,
+        total:total12,
+        downpayment:per12,
+        tag:'25% APR'
       });
     }
-
-    items.forEach(p=>{
-      const card=document.createElement('div');
-      card.className='plan';
-      card.innerHTML = `
-        <div class="planHead">
-          <div style="font-weight:900">${p.title}</div>
-          <div class="badge">${p.apr}</div>
-        </div>
-        <div class="per">${p.per}</div>
-        <div class="sub">${p.sub}</div>
-        ${p.down?`<div class="down">${p.down}</div>`:''}
-        <button class="selectBtn">Select plan</button>
-      `;
-      list.appendChild(card);
-    });
-    document.getElementById('basis').textContent = `Based on a purchase of ${fmt(a)} at ${m}.`;
+    return items;
   }
+
+  function showPlans(){
+    plansTitle.textContent = `Plans for ${current.merchant}`;
+    const list = makePlans(current.amount).filter(p=>{
+      if(current.amount < 100) return p.id!=='m12';
+      return true;
+    });
+    plansWrap.innerHTML = list.map(p=>`
+      <div class="plan">
+        <div class="hdr">
+          <div style="font-weight:900">${p.name}</div>
+          <div class="pill">${p.tag}</div>
+        </div>
+        <div class="price">${fmt(p.per)} <span class="small">${p.id==='pay4'?'x 4':'/ mo'}</span></div>
+        <div class="small">${p.id==='pay4'?'Every 2 weeks':'6 payments'.replace('6', p.payments)} • Total ${fmt(p.total)}</div>
+        ${p.id==='pay4'?`<div style="margin-top:8px;font-weight:900">Downpayment today ${fmt(p.downpayment)}</div>`:''}
+        <button class="select" data-plan='${JSON.stringify(p)}'>Select plan</button>
+      </div>
+    `).join('');
+    basedNote.textContent = `Based on a purchase of ${fmt(current.amount)} at ${current.merchant}.`;
+    plansSheet.classList.add('active');
+    plansWrap.querySelectorAll('.select').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const p = JSON.parse(btn.getAttribute('data-plan'));
+        plansSheet.classList.remove('active');
+        openActivate(p);
+      });
+    });
+  }
+
+  /* Activate sheet */
+  const activateSheet = document.getElementById('activateSheet');
+  const actContent = document.getElementById('actContent');
+  const actClose = document.getElementById('actClose');
+  const actDim = document.getElementById('actDim');
+  actClose.addEventListener('click', ()=>activateSheet.classList.remove('active'));
+  actDim.addEventListener('click', ()=>activateSheet.classList.remove('active'));
+
+  function openActivate(plan){
+    const interestAmt = +(plan.total - current.amount).toFixed(2);
+    const aprStr = (plan.apr||0).toFixed(2);
+    const cadenceLine =
+      plan.id==='pay4'
+        ? `${fmt(plan.per)} every 2 weeks for 6 weeks`
+        : `${fmt(plan.per)} every month for ${plan.payments} months`;
+
+    const dueTodayLabel = (plan.id==='pay4'?'Downpayment today':'Due today');
+    const dueToday = plan.downpayment;
+
+    actContent.innerHTML = `
+      <div class="box">
+        <div class="summaryTitle">${cadenceLine}</div>
+        <div class="small">${plan.payments} payments</div>
+        <div class="dates">
+          <div class="dot" aria-hidden="true"></div>
+          <div class="dot" aria-hidden="true"></div>
+          <div class="dot" aria-hidden="true"></div>
+          ${plan.payments>3?'<div class="dot" aria-hidden="true"></div>':''}
+        </div>
+        <div class="helper" style="margin-top:8px">These due dates are close estimates.</div>
+      </div>
+
+      <div class="box">
+        <h4>${dueTodayLabel}<span style="float:right">${fmt(dueToday)}</span></h4>
+        <div class="line"><div>Purchase amount</div><div>${fmt(current.amount)}</div></div>
+        <div class="line"><div>Interest (${aprStr}% APR)</div><div>${fmt(interestAmt)}</div></div>
+        <div class="line" style="font-weight:900"><div>Total of payments</div><div>${fmt(plan.total)}</div></div>
+      </div>
+
+      <div class="box">
+        <h4>Activate, then swipe</h4>
+        <div class="helper">Your plan won't start until you check out with your Affirm Card.</div>
+      </div>
+
+      <label class="agree">
+        <input id="agreeCk" type="checkbox"/>
+        <span>By continuing, you authorize the payment due today and agree to the
+          <a class="linkish" href="#" onclick="event.preventDefault()">One-Time Payment Authorization</a>
+          and the <a class="linkish" href="#" onclick="event.preventDefault()">Autopay Authorization</a>.
+          I have reviewed and agree to the
+          <a class="linkish" href="#" onclick="event.preventDefault()">Payment Agreement &amp; Disclosures</a>
+          and ${current.merchant} refund policy.
+        </span>
+      </label>
+
+      <button class="bigbtn" id="activateBtn" disabled>Activate my plan</button>
+    `;
+
+    activateSheet.classList.add('active');
+    const ck = actContent.querySelector('#agreeCk');
+    const ab = actContent.querySelector('#activateBtn');
+    ck.addEventListener('change', ()=>{ ab.disabled = !ck.checked; });
+  }
+
 })();
 </script>
 </body>
