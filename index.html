@@ -319,9 +319,11 @@
   }
   function closeSheet(){ sheet.classList.remove('active'); }
   function goStep(n){
-    step = n;
-    pages.style.transform = `translateX(-${n*100}%)`;
-  }
+  step = n;
+  const total = pages.children.length || 1;     // e.g., 4 pages
+  const pct = (100 / total) * n;                // 0, 25, 50, 75 …
+  pages.style.transform = `translateX(-${pct}%)`;
+}
 
   openPlan.addEventListener('click', openSheet);
   dim.addEventListener('click', closeSheet);
