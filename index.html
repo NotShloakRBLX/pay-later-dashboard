@@ -31,18 +31,32 @@
   .icons{position:absolute;right:16px;top:12px;display:flex;gap:10px}
   .ib{width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.07)}
   .card{margin:14px; padding:18px 18px 22px;background:var(--card);border-radius:28px;box-shadow:var(--shadow)}
-  .seg{background:#eef0f6;border-radius:999px;padding:8px;display:flex}
-  .seg .tab{flex:1;padding:10px 14px;border-radius:999px;text-align:center;font-weight:800}
-  .seg .tab.active{background:var(--pill);color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 6px 16px rgba(12,16,64,.35)}
+  /* segmented */
+  .seg{background:#eef0f6;border-radius:999px;padding:8px;display:flex;gap:8px;position:relative;user-select:none}
+  .seg .bubble{position:absolute;left:8px;top:8px;bottom:8px;width:calc(50% - 8px);border-radius:999px;background:var(--pill);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 6px 16px rgba(12,16,64,.35);transition:left var(--t)}
+  .seg[data-active="pif"] .bubble{left:calc(50% + 0px)}
+  .seg .tab{flex:1;padding:10px 14px;border-radius:999px;text-align:center;font-weight:800;position:relative;z-index:1;cursor:pointer}
+  .seg .tab{color:#111}
+  .seg[data-active="pot"] .tab[data-id="pot"],
+  .seg[data-active="pif"] .tab[data-id="pif"]{color:#fff}
   .chip{margin:16px 0 6px;border:1.5px solid #e6e8ef;border-radius:999px;padding:12px 16px;font-weight:800;color:#111;display:flex;align-items:center;gap:10px}
   .chip svg{width:18px;height:18px}
   .big{font-size:62px;line-height:1;font-weight:900;letter-spacing:-1.2px;margin:10px 2px 18px}
   .cta{display:block;width:100%;border:0;border-radius:999px;background:#0b0f4f;color:#fff;font-weight:900;padding:18px 20px;font-size:18px}
+  .muted{color:var(--muted)}
+  /* Pay in full content */
+  .acctChip{display:inline-flex;align-items:center;gap:10px;border:1.5px solid #e1e4ec;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+  .acctChip svg{width:18px;height:18px}
+  .outlineBtn{display:block;width:100%;border-radius:999px;border:2px solid #0b0f4f;background:transparent;color:#0b0f4f;font-weight:900;padding:16px 18px;text-align:center}
+  .pifCenter{display:grid;place-items:center;text-align:center}
+  .pifBig{font-size:54px;line-height:1;font-weight:900;letter-spacing:-.6px;margin:14px 0 6px}
+  .pifWrap{margin:12px 2px 6px}
+  /* bottom tabs */
   .tabs{position:sticky;bottom:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:8px 2px 10px}
   .tabs .t{display:flex;flex-direction:column;align-items:center;gap:6px;color:#111}
   .tabs .t svg{width:24px;height:24px}
   .tabs .t.active{color:#0b0f4f;font-weight:800}
-
   /* Manage view */
   .manageWrap{padding:14px}
   .manageCard{background:#fff;border-radius:20px;padding:18px 18px 24px;box-shadow:var(--shadow)}
@@ -50,8 +64,6 @@
   .tabsMan{display:flex;gap:28px;margin:0 2px 12px;border-bottom:2px solid #e9eaf0}
   .tabsMan .m{padding:12px 0;font-weight:800;position:relative}
   .tabsMan .m.active::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;background:#0b0f4f;border-radius:3px}
-  .muted{color:var(--muted)}
-
   /* sheet (plan a purchase) */
   .sheet{position:fixed;inset:0;display:grid;place-items:end center;pointer-events:none;z-index:20}
   .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--t)}
@@ -72,8 +84,6 @@
   .center{display:grid;place-items:center;gap:12px;padding:10px 8px 6px;text-align:center}
   .spinner{width:22px;height:22px;border-radius:50%;border:3px solid #e9ecff;border-top-color:#0b0f4f;animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-
-  /* plans */
   .plansTitle{font-weight:900;margin:4px 2px 10px}
   .plan{background:#fff;border:1.5px solid #e5e7ef;border-radius:18px;padding:16px 14px 14px;margin:10px 2px;box-shadow:0 6px 16px rgba(16,24,40,.05)}
   .planHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -82,6 +92,13 @@
   .sub{font-size:14px;color:#5b6170;font-weight:700}
   .down{margin-top:8px;font-weight:900}
   .selectBtn{margin-top:12px;width:100%;border:0;background:#0b0f4f;color:#fff;border-radius:12px;padding:12px 14px;font-weight:900}
+
+  /* animations/simple fades for mode swap */
+  .hidden{display:none}
+  .fadeIn{animation:fadeIn var(--t) ease}
+  .fadeOut{animation:fadeOut .14s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 
   /* nav transitions */
   .pos-0 .views{transform:translateX(0%)} 
@@ -103,18 +120,43 @@
       </div>
 
       <div class="card">
-        <div class="seg" aria-hidden="true">
-          <div class="tab active">Pay over time</div>
+        <!-- Segmented control -->
+        <div class="seg" id="seg" data-active="pot" aria-label="Choose payoff mode">
+          <div class="bubble" aria-hidden="true"></div>
+          <div class="tab" data-id="pot">Pay over time</div>
+          <div class="tab" data-id="pif">Pay in full</div>
         </div>
 
-        <div class="chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0b0f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-          Purchasing power
+        <!-- PAY OVER TIME CONTENT -->
+        <div id="potView" class="mode">
+          <div class="chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0b0f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+            Purchasing power
+          </div>
+          <div class="big">$11,910</div>
+          <button class="cta" id="openPlanner">Plan a purchase</button>
         </div>
 
-        <div class="big">$11,910</div>
-
-        <button class="cta" id="openPlanner">Plan a purchase</button>
+        <!-- PAY IN FULL CONTENT -->
+        <div id="pifView" class="mode hidden">
+          <div class="pifWrap">
+            <div class="acctChip" id="acctLink" role="button" tabindex="0" aria-label="Open Sapphire Checking">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#0b0f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 10l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <path d="M9 22V12h6v10"/>
+              </svg>
+              Sapphire Checking
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9aa0b2" stroke-width="2" style="margin-left:6px">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+          </div>
+          <div class="pifCenter">
+            <div class="pifBig">$298.04</div>
+            <div class="muted" style="margin:2px 0 18px">Available balance</div>
+            <a class="outlineBtn" id="goBtn" role="button">Go</a>
+          </div>
+        </div>
       </div>
 
       <div style="height:28vh"></div>
@@ -208,7 +250,37 @@
     });
   });
 
-  /* Sheet logic */
+  /* Segmented control + modes */
+  const seg = document.getElementById('seg');
+  const potView = document.getElementById('potView');
+  const pifView = document.getElementById('pifView');
+
+  function swap(to){
+    if(to==='pot'){
+      seg.setAttribute('data-active','pot');
+      pifView.classList.add('fadeOut');
+      setTimeout(()=>{ pifView.classList.add('hidden'); pifView.classList.remove('fadeOut'); potView.classList.remove('hidden'); potView.classList.add('fadeIn'); setTimeout(()=>potView.classList.remove('fadeIn'),300); },120);
+    }else{
+      seg.setAttribute('data-active','pif');
+      potView.classList.add('fadeOut');
+      setTimeout(()=>{ potView.classList.add('hidden'); potView.classList.remove('fadeOut'); pifView.classList.remove('hidden'); pifView.classList.add('fadeIn'); setTimeout(()=>pifView.classList.remove('fadeIn'),300); },120);
+    }
+  }
+
+  seg.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',()=>swap(tab.dataset.id));
+  });
+
+  // External link for Pay in full
+  const SAV_URL = 'https://notshloakrblx.github.io/savings-checking-dashboard/';
+  const acctLink = document.getElementById('acctLink');
+  const goBtn = document.getElementById('goBtn');
+  const go = ()=>{ window.location.href = SAV_URL; };
+  acctLink.addEventListener('click',go);
+  acctLink.addEventListener('keypress',e=>{ if(e.key==='Enter') go(); });
+  goBtn.addEventListener('click',go);
+
+  /* Sheet logic (Pay over time flow) */
   const sheet=document.getElementById('sheet');
   const dim=document.getElementById('dim');
   const closeX=document.getElementById('closeX');
@@ -235,10 +307,7 @@
   const amt=document.getElementById('amount');
   const toLoading=document.getElementById('toLoading');
   function parseAmount(){ const n = parseFloat((amt.value||'').replace(/[^\d.]/g,'')); return isFinite(n)? +(n.toFixed(2)) : NaN; }
-  amt.addEventListener('input',()=>{
-    // keep only numbers & dot visually formatted
-    toLoading.disabled = !(parseAmount() > 0);
-  });
+  amt.addEventListener('input',()=>{ toLoading.disabled = !(parseAmount() > 0); });
 
   toLoading.addEventListener('click',()=>{
     setStep('loading');
