@@ -7,9 +7,8 @@
 <style>
   :root{
     --bg:#f2f3f5; --ink:#0c1324; --muted:#6d7280; --brand:#0b0f3b;
-    --pill:#0b0f3b; --pill-bg:#e9ebf0; --card:#fff; --outline:#cfd5e1;
-    --accent:#0a0f3b; --primary:#0a0f3b; --primaryText:#fff;
-    --radius:22px; --t:.28s cubic-bezier(.2,.8,.2,1);
+    --card:#fff; --outline:#cfd5e1; --primary:#0a0f3b; --primaryText:#fff;
+    --radius:26px; --t:.28s cubic-bezier(.2,.8,.2,1);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -21,84 +20,80 @@
   .tb-icons{display:flex;gap:12px}
   .ib{width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid #eceff4;display:grid;place-items:center}
   .views{position:relative;flex:1;overflow:hidden}
-  .viewWrap{display:flex;width:200%;height:100%;transition:transform var(--t)}
+  .viewWrap{display:flex;width:300%;height:100%;transition:transform var(--t)}
   .view{width:100%;height:100%;overflow:auto;padding:0 14px 90px}
+
+  /* Card page */
   .card{background:var(--card);border-radius:26px;padding:16px 16px 20px;margin:8px 6px 0;box-shadow:0 18px 40px rgba(12,19,36,.08)}
   .switch{position:relative;background:#eef0f4;border-radius:999px;padding:8px}
   .switchInner{display:grid;grid-template-columns:1fr 1fr;position:relative}
   .thumb{position:absolute;inset:6px auto 6px 6px;width:calc(50% - 6px);border-radius:999px;background:#0c0f27;color:#fff;box-shadow:0 8px 20px rgba(12,19,36,.25);transition:transform var(--t)}
   .thumb.r{transform:translateX(100%)}
   .sw-btn{position:relative;z-index:1;border:0;background:transparent;padding:12px 8px;border-radius:999px;
-    font-weight:800;color:#fff}
-  .sw-btn:nth-child(2){color:#222}
-  .chip{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;padding:12px 14px;border-radius:999px;font-weight:800}
+    font-weight:900;color:#fff}
+  .sw-btn:nth-child(2){color:#333}
+
+  .chip{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;padding:12px 14px;border-radius:999px;font-weight:800;margin:16px 0 12px}
   .chip svg{width:18px;height:18px}
-  .power{margin:16px 0 12px}
   .big{font-size:64px;line-height:1;font-weight:900;letter-spacing:-.5px;margin:8px 10px}
   .cta{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;
     font-weight:900;padding:16px;margin:10px 0 8px}
-  .subtle{color:var(--muted);text-align:center;margin:0 10px 4px}
-  .outline{display:block;width:100%;border-radius:999px;background:#fff;border:2px solid #0a0f3b;color:#0a0f3b;font-weight:900;padding:14px}
+
   .center{display:flex;justify-content:center}
   .linkish{color:#0a0f3b;text-decoration:none}
-  .moneyRow{display:flex;justify-content:center}
-  .row{display:flex;gap:10px;align-items:center}
-  .row a{color:inherit;text-decoration:none}
   .bankTag{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;border-radius:999px;padding:12px 16px;font-weight:800}
   .bankTag svg{width:18px;height:18px}
-  /* bottom nav */
-  .tabs{position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6ee;display:flex;gap:2px;justify-content:space-around;padding:8px 6px;z-index:2}
-  .tab{flex:1;text-align:center;padding:8px 0;color:#4b5160;text-decoration:none;font-weight:800}
-  .tab.active{color:#0a0f3b}
+  .outline{display:block;width:100%;border-radius:999px;background:#fff;border:2px solid #0a0f3b;color:#0a0f3b;font-weight:900;padding:14px;text-align:center}
+  .subtle{color:#6d7280;text-align:center;margin:0 10px 4px}
+
   /* Manage */
-  .manage h2{margin:18px 10px 8px}
+  .manage h2{margin:14px 12px 0}
   .seg{display:flex;gap:26px;margin:12px 10px;border-bottom:2px solid #e6e9f1}
   .seg button{appearance:none;border:0;background:transparent;padding:12px 0;font-weight:800;color:#0a0f3b;position:relative}
   .seg button::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:3px;background:#0a0f3b;border-radius:2px}
-  .empty{color:#6c7486;margin:26px 12px 0}
-  /* Sheet */
-  .sheet{position:fixed;inset:0;display:grid;place-items:end center;pointer-events:none;z-index:30}
-  .sheet.active{pointer-events:auto}
-  .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--t)}
-  .sheet.active .dim{opacity:1}
-  .panel{width:100%;max-width:430px;background:#fff;border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform var(--t);box-shadow:0 -20px 36px rgba(12,19,36,.25)}
-  .sheet.active .panel{transform:translateY(0)}
-  .head{display:flex;align-items:center;justify-content:center;padding:12px 14px 2px;position:relative}
-  .x{position:absolute;left:12px;top:8px;width:40px;height:40px;border-radius:14px;border:0;background:#edf0f6;font-size:20px;font-weight:900}
-  .title{font-size:22px;font-weight:900;margin:6px 0 8px}
-  .pad{padding:6px 16px 18px}
-  .ask{margin:16px 0 6px;font-weight:900}
-  .inp{width:100%;border:1px solid #d9e0ec;border-radius:14px;padding:14px 14px;font:inherit}
-  .barCta{position:sticky;bottom:0;background:#0a0f3b;color:#fff;font-weight:900;border:0;padding:16px;width:100%}
-  .bar{position:sticky;bottom:0;display:flex}
-  .helper{color:#6b7184;margin:8px 0 0}
-  .pages{display:flex;width:300%;transition:transform var(--t)}
-  .page{width:100%}
-  .spinner{width:30px;height:30px;border-radius:50%;border:4px solid #e7eaf2;border-top-color:#0a0f3b;animation:spin 1s linear infinite;margin-left:auto}
+  .empty{color:#6c7486;margin:20px 12px 0}
+
+  /* bottom tabs */
+  .tabs{position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6ee;display:flex;gap:2px;justify-content:space-around;padding:8px 6px;z-index:3}
+  .tab{flex:1;text-align:center;padding:8px 0;color:#4b5160;text-decoration:none;font-weight:900}
+  .tab.active{color:#0a0f3b}
+
+  /* PLAN PAGE (full screen) */
+  .planHead{display:flex;align-items:center;gap:10px;padding:14px}
+  .backBtn{border:0;background:#edf0f6;border-radius:12px;width:40px;height:40px;font-weight:900}
+  .planTitle{font-weight:900;font-size:20px}
+  .planBody{padding:0 14px 24px}
+  .ask{margin:6px 2px 6px;font-weight:900}
+  .inp{width:100%;border:1px solid #d9e0ec;border-radius:14px;padding:14px 14px;font:inherit;background:#fff}
+  .bar{position:sticky;bottom:58px;display:flex;padding:0 14px 14px;z-index:2}
+  .barCta{background:#0a0f3b;color:#fff;font-weight:900;border:0;border-radius:14px;padding:16px;width:100%}
+  .helper{color:#6b7184;margin:8px 2px 0}
+
+  .planPages{display:flex;width:500%;transition:transform var(--t)}
+  .planPage{width:100%}
+
+  .spinner{width:34px;height:34px;border-radius:50%;border:4px solid #e7eaf2;border-top-color:#0a0f3b;animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  /* plans list */
-  .plans{padding:0 16px 20px}
-  .plan{background:#fff;border:1px solid #e6eaf2;border-radius:20px;padding:14px 14px 16px;margin:12px 0;box-shadow:0 10px 26px rgba(12,19,36,.06)}
-  .plan .hdr{display:flex;justify-content:space-between;align-items:center}
+
+  .plans{padding:0 6px 20px}
+  .planCard{background:#fff;border:1px solid #e6eaf2;border-radius:20px;padding:14px 14px 16px;margin:12px 8px;box-shadow:0 10px 26px rgba(12,19,36,.06)}
+  .planCard .hdr{display:flex;justify-content:space-between;align-items:center}
   .pill{font-size:12px;border-radius:999px;background:#eef1f6;padding:6px 10px;font-weight:900}
   .price{font-size:34px;font-weight:900;margin:8px 0 2px}
   .small{color:#6a7285;font-weight:700}
   .select{display:block;width:100%;background:#0a0f3b;color:#fff;border:0;border-radius:12px;font-weight:900;padding:12px;margin-top:12px}
-  .based{color:#6b7280;text-align:center;margin:12px 0 20px}
-  /* Activate sheet (full) */
-  .fullSheet .panel{height:92svh}
-  .subviews{display:flex;width:200%;transition:transform var(--t)}
-  .detailWrap{padding:12px 16px 26px}
-  .box{background:#fff;border:1px solid #e4e8f2;border-radius:18px;padding:14px 14px 10px;margin:10px 0}
-  .box h4{margin:2px 0 8px;font-size:16px}
+  .based{color:#6b7280;text-align:center;margin:16px 10px 28px}
+
+  /* Activate section inside plan page */
+  .box{background:#fff;border:1px solid #e4e8f2;border-radius:18px;padding:14px 14px 10px;margin:10px 8px}
+  .summaryTitle{font-size:18px;font-weight:900;margin-bottom:6px}
   .line{display:flex;justify-content:space-between;margin:8px 0}
-  .agree{display:flex;gap:10px;align-items:flex-start;margin:8px 0 0;color:#111}
+  .agree{display:flex;gap:10px;align-items:flex-start;margin:8px 8px 0;color:#111}
   .agree input{transform:translateY(2px) scale(1.2)}
-  .bigbtn{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;font-weight:900;padding:16px;margin:16px 0 24px}
+  .bigbtn{display:block;width:calc(100% - 16px);margin:16px 8px 24px;border:0;border-radius:999px;background:#0a0f3b;color:#fff;font-weight:900;padding:16px}
   .bigbtn:disabled{opacity:.5}
   .dates{display:flex;gap:16px;margin-top:8px}
   .dot{width:40px;height:40px;border-radius:999px;border:5px solid #e1e5f1;border-right-color:#0a0f3b}
-  .summaryTitle{font-size:18px;font-weight:900;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -114,10 +109,10 @@
 
   <div class="views">
     <div class="viewWrap" id="viewWrap">
-      <!-- CARD VIEW -->
-      <section class="view">
+      <!-- 1) CARD -->
+      <section class="view" id="cardView">
         <div class="card">
-          <!-- switcher -->
+          <!-- toggle -->
           <div class="switch">
             <div class="thumb" id="thumb"></div>
             <div class="switchInner">
@@ -126,24 +121,21 @@
             </div>
           </div>
 
-          <!-- slider pages for the card content -->
-          <div class="pages" id="payPages" style="margin-top:14px">
-            <!-- Pay over time -->
-            <div class="page">
-              <div class="power">
-                <div class="chip">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h7l-1 8 10-12h-7z"/></svg>
-                  Purchasing power
-                </div>
+          <!-- card content pages -->
+          <div class="planPages" id="payPages" style="margin-top:14px;width:200%">
+            <!-- over time -->
+            <div class="planPage">
+              <div class="chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h7l-1 8 10-12h-7z"/></svg>
+                Purchasing power
               </div>
-              <div class="big" id="pp">$11,910</div>
+              <div class="big">$11,910</div>
               <button class="cta" id="planBtn">Plan a purchase</button>
             </div>
-
-            <!-- Pay in full -->
-            <div class="page">
+            <!-- pay in full -->
+            <div class="planPage">
               <div class="center">
-                <a class="bankTag linkish" id="bankLink" href="https://notshloakrblx.github.io/savings-checking-dashboard/">
+                <a class="bankTag linkish" id="bankLink" href="https://notshloakrblx.github.io/savings-checking-dashboard/" target="_blank" rel="noopener">
                   <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 10h18L12 4 3 10zM4 10v8M20 10v8M2 18h20"/></svg>
                   Sapphire Checking
@@ -151,236 +143,181 @@
               </div>
               <div class="big">$298.04</div>
               <p class="subtle">Available balance</p>
-              <a class="outline center" href="https://notshloakrblx.github.io/savings-checking-dashboard/">Go</a>
+              <a class="outline" href="https://notshloakrblx.github.io/savings-checking-dashboard/" target="_blank" rel="noopener">Go</a>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- MANAGE VIEW -->
-      <section class="view manage">
-        <h2 style="margin:14px 12px 0">Manage</h2>
+      <!-- 2) MANAGE -->
+      <section class="view manage" id="manageView">
+        <h2>Manage</h2>
         <div class="seg"><button>Active</button></div>
         <div class="empty">
           <h3>Your purchases are paid off</h3>
           <p>Explore exclusive deals and get flexible payment plans at top stores.</p>
         </div>
       </section>
+
+      <!-- 3) PLAN PAGE (full) -->
+      <section class="view" id="planView">
+        <div class="planHead">
+          <button class="backBtn" id="planBack">‹</button>
+          <div class="planTitle" id="planTitle">Plan a purchase</div>
+        </div>
+        <div class="planPages" id="wizard" style="width:500%">
+          <!-- Q1 -->
+          <div class="planPage">
+            <div class="planBody">
+              <div class="ask">Merchant</div>
+              <input id="merchant" class="inp" placeholder="e.g., Amazon"/>
+            </div>
+            <div class="bar"><button class="barCta" id="toQ2">Continue</button></div>
+          </div>
+          <!-- Q2 -->
+          <div class="planPage">
+            <div class="planBody">
+              <div class="ask">Purchase amount</div>
+              <input id="amount" class="inp" inputmode="decimal" pattern="[0-9]*" placeholder="0.00"/>
+              <p class="helper">Numbers only. You’ll see plans next.</p>
+            </div>
+            <div class="bar"><button class="barCta" id="toLoading">Continue</button></div>
+          </div>
+          <!-- Loading -->
+          <div class="planPage">
+            <div class="planBody" style="display:flex;align-items:center;gap:14px">
+              <div>
+                <div class="planTitle" style="margin:0 0 6px" id="loadingTitle">Plans for …</div>
+                <div class="helper">Finding plans for you</div>
+              </div>
+              <div class="spinner" aria-hidden="true"></div>
+            </div>
+          </div>
+          <!-- Plans -->
+          <div class="planPage">
+            <div class="plans" id="plansWrap"></div>
+            <p class="based" id="basedNote"></p>
+          </div>
+          <!-- Activate -->
+          <div class="planPage">
+            <div id="actContent"></div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
-  <!-- bottom tabs -->
+  <!-- tabs -->
   <div class="tabs">
     <a class="tab active" id="tabCard" href="#">Card</a>
     <a class="tab" id="tabManage" href="#">Manage</a>
   </div>
 </div>
 
-<!-- PLAN SHEET -->
-<div class="sheet" id="sheet">
-  <div class="dim" id="dim"></div>
-  <div class="panel">
-    <div class="head"><button class="x" id="closeX">×</button><div class="title" id="sheetTitle">Plan a purchase</div></div>
-    <div class="pages" id="pages">
-      <!-- Q1 -->
-      <div class="page">
-        <div class="pad">
-          <div class="ask">Merchant</div>
-          <input id="merchant" class="inp" placeholder="e.g., Amazon"/>
-        </div>
-        <div class="bar"><button class="barCta" id="toQ2">Continue</button></div>
-      </div>
-      <!-- Q2 -->
-      <div class="page">
-        <div class="pad">
-          <div class="ask">Purchase amount</div>
-          <input id="amount" class="inp" inputmode="decimal" pattern="[0-9]*" placeholder="0.00"/>
-          <p class="helper">Numbers only. You’ll see plans next.</p>
-        </div>
-        <div class="bar"><button class="barCta" id="toLoading">Continue</button></div>
-      </div>
-      <!-- Loading -->
-      <div class="page">
-        <div class="pad" style="display:flex;align-items:center;gap:14px">
-          <div>
-            <div class="title" style="margin:0 0 6px" id="loadingTitle">Plans for …</div>
-            <div class="helper">Finding plans for you</div>
-          </div>
-          <div class="spinner" aria-hidden="true"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PLANS SHEET -->
-<div class="sheet" id="plansSheet">
-  <div class="dim" id="plansDim"></div>
-  <div class="panel">
-    <div class="head">
-      <button class="x" id="plansClose">×</button>
-      <div class="title" id="plansTitle">Plans</div>
-    </div>
-    <div class="plans" id="plansWrap"></div>
-    <p class="based" id="basedNote"></p>
-  </div>
-</div>
-
-<!-- ACTIVATE SHEET (full) -->
-<div class="sheet fullSheet" id="activateSheet">
-  <div class="dim" id="actDim"></div>
-  <div class="panel">
-    <div class="head">
-      <button class="x" id="actClose">×</button>
-      <div class="title">Review and activate your plan</div>
-    </div>
-
-    <div class="subviews" id="actPages">
-      <div class="page">
-        <div class="detailWrap" id="actContent">
-          <!-- filled by JS -->
-        </div>
-      </div>
-      <div class="page"><!-- reserved --></div>
-    </div>
-  </div>
-</div>
-
 <script>
 (()=>{
 
-  /* view switch */
-  const viewWrap = document.getElementById('viewWrap');
-  const tabCard = document.getElementById('tabCard');
-  const tabManage = document.getElementById('tabManage');
-  tabCard.addEventListener('click', (e)=>{e.preventDefault(); viewWrap.style.transform='translateX(0%)'; tabCard.classList.add('active'); tabManage.classList.remove('active');});
-  tabManage.addEventListener('click', (e)=>{e.preventDefault(); viewWrap.style.transform='translateX(-50%)'; tabManage.classList.add('active'); tabCard.classList.remove('active');});
+  /* root nav */
+  const wrap = document.getElementById('viewWrap');
+  const tabCard=document.getElementById('tabCard'), tabManage=document.getElementById('tabManage');
+  function go(idx){ wrap.style.transform=`translateX(-${idx*33.3333}%)`; }
+  tabCard.addEventListener('click',e=>{e.preventDefault(); go(0); tabCard.classList.add('active'); tabManage.classList.remove('active');});
+  tabManage.addEventListener('click',e=>{e.preventDefault(); go(1); tabManage.classList.add('active'); tabCard.classList.remove('active');});
 
-  /* pay over time / pay in full switcher */
-  const pages = document.getElementById('payPages');
-  const btnOver = document.getElementById('btnOver');
-  const btnFull = document.getElementById('btnFull');
-  const thumb = document.getElementById('thumb');
-  let mode='over';
-  function setMode(m){
-    mode=m;
-    pages.style.transform = (m==='over')?'translateX(0%)':'translateX(-50%)';
-    thumb.classList.toggle('r', m==='full');
-  }
-  btnOver.addEventListener('click', ()=>setMode('over'));
-  btnFull.addEventListener('click', ()=>setMode('full'));
+  /* toggle within card */
+  const pages=document.getElementById('payPages'), thumb=document.getElementById('thumb');
+  document.getElementById('btnOver').addEventListener('click',()=>{ pages.style.transform='translateX(0%)'; thumb.classList.remove('r'); });
+  document.getElementById('btnFull').addEventListener('click',()=>{ pages.style.transform='translateX(-50%)'; thumb.classList.add('r'); });
 
-  /* plan sheet (wizard) */
-  const sheet = document.getElementById('sheet');
-  const dim = document.getElementById('dim');
-  const closeX = document.getElementById('closeX');
-  const planBtn = document.getElementById('planBtn');
-  const wizardPages = document.getElementById('pages');
-  const toQ2 = document.getElementById('toQ2');
-  const toLoading = document.getElementById('toLoading');
-  const merchantEl = document.getElementById('merchant');
-  const amountEl = document.getElementById('amount');
-  const loadingTitle = document.getElementById('loadingTitle');
-  const sheetTitle = document.getElementById('sheetTitle');
+  /* open plan page */
+  const planBtn=document.getElementById('planBtn');
+  planBtn.addEventListener('click',()=>{ go(2); setTimeout(()=>document.getElementById('merchant').focus(),180); });
 
-  function openSheet(){ sheet.classList.add('active'); wizardPages.style.transform='translateX(0%)'; sheetTitle.textContent='Plan a purchase'; merchantEl.value=''; amountEl.value=''; }
-  function closeSheet(){ sheet.classList.remove('active'); }
-  planBtn.addEventListener('click', openSheet);
-  dim.addEventListener('click', closeSheet); closeX.addEventListener('click', closeSheet);
+  /* plan page logic */
+  const wizard=document.getElementById('wizard');
+  const toQ2=document.getElementById('toQ2');
+  const toLoading=document.getElementById('toLoading');
+  const merchantEl=document.getElementById('merchant');
+  const amountEl=document.getElementById('amount');
+  const loadingTitle=document.getElementById('loadingTitle');
+  const planTitle=document.getElementById('planTitle');
+  const planBack=document.getElementById('planBack');
 
-  toQ2.addEventListener('click', ()=>{
-    wizardPages.style.transform='translateX(-33.3333%)';
-    setTimeout(()=>{ document.getElementById('amount').focus(); },220);
+  planBack.addEventListener('click',()=>{ go(0); wizard.style.transform='translateX(0%)'; planTitle.textContent='Plan a purchase'; });
+
+  toQ2.addEventListener('click',()=>{ wizard.style.transform='translateX(-20%)'; setTimeout(()=>amountEl.focus(),220); });
+
+  const current={merchant:'',amount:0};
+  const fmt=n=>n.toLocaleString(undefined,{style:'currency',currency:'USD'});
+
+  toLoading.addEventListener('click',()=>{
+    const m=(merchantEl.value||'').trim()||'Store';
+    const raw=(amountEl.value||'0').replace(/[^\d.]/g,'');
+    const amt=Math.max(0,parseFloat(raw||'0'));
+    if(!isFinite(amt)||amt<=0){ amountEl.focus(); return; }
+    current.merchant=m; current.amount=Math.round(amt*100)/100;
+    loadingTitle.textContent=`Plans for ${m}`;
+    planTitle.textContent=`Plans for ${m}`;
+    wizard.style.transform='translateX(-40%)';
+    setTimeout(()=>{ showPlans(); wizard.style.transform='translateX(-60%)'; },3000);
   });
 
-  const current = {merchant:'', amount:0};
-  function fmt(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD'}); }
-
-  toLoading.addEventListener('click', ()=>{
-    const m = (merchantEl.value||'').trim() || 'Store';
-    const raw = (amountEl.value||'0').replace(/[^\d.]/g,'');
-    const amt = Math.max(0, parseFloat(raw||'0'));
-    if(!isFinite(amt) || amt<=0){ amountEl.focus(); return; }
-    current.merchant = m;
-    current.amount = Math.round(amt*100)/100;
-    loadingTitle.textContent = `Plans for ${m}`;
-    wizardPages.style.transform='translateX(-66.6667%)';
-    setTimeout(()=>{ closeSheet(); showPlans(); }, 3000);
-  });
-
-  /* plans sheet */
-  const plansSheet = document.getElementById('plansSheet');
-  const plansDim = document.getElementById('plansDim');
-  const plansClose = document.getElementById('plansClose');
-  const plansTitle = document.getElementById('plansTitle');
-  const plansWrap = document.getElementById('plansWrap');
-  const basedNote = document.getElementById('basedNote');
-  plansDim.addEventListener('click', ()=>plansSheet.classList.remove('active'));
-  plansClose.addEventListener('click', ()=>plansSheet.classList.remove('active'));
+  /* plans list */
+  const plansWrap=document.getElementById('plansWrap');
+  const basedNote=document.getElementById('basedNote');
 
   function makePlans(amt){
     const items=[];
-    const p4 = +(amt/4).toFixed(2);
+    const p4=+(amt/4).toFixed(2);
     items.push({ id:'pay4', name:'Bi-weekly (Pay in 4)', apr:0, payments:4, cadence:'Every 2 weeks', per:p4, total:+(p4*4).toFixed(2), downpayment:p4, tag:'0% APR' });
-    const total6 = +(amt*1.20).toFixed(2), per6 = +(total6/6).toFixed(2);
+    const total6=+(amt*1.20).toFixed(2), per6=+(total6/6).toFixed(2);
     items.push({ id:'m6', name:'6 months', apr:20, payments:6, cadence:'6 payments', per:per6, total:total6, downpayment:per6, tag:'20% APR' });
     if(amt>=100){
-      const total12 = +(amt*1.25).toFixed(2), per12 = +(total12/12).toFixed(2);
+      const total12=+(amt*1.25).toFixed(2), per12=+(total12/12).toFixed(2);
       items.push({ id:'m12', name:'12 months', apr:25, payments:12, cadence:'12 payments', per:per12, total:total12, downpayment:per12, tag:'25% APR' });
     }
     return items;
   }
 
   function showPlans(){
-    plansTitle.textContent = `Plans for ${current.merchant}`;
-    const list = makePlans(current.amount).filter(p=> current.amount < 100 ? p.id!=='m12' : true);
-    plansWrap.innerHTML = list.map(p=>`
-      <div class="plan">
+    const list=makePlans(current.amount).filter(p=> current.amount<100 ? p.id!=='m12' : true);
+    plansWrap.innerHTML=list.map(p=>`
+      <div class="planCard">
         <div class="hdr">
           <div style="font-weight:900">${p.name}</div>
           <div class="pill">${p.tag}</div>
         </div>
         <div class="price">${fmt(p.per)} <span class="small">${p.id==='pay4'?'x 4':'/ mo'}</span></div>
-        <div class="small">${p.id==='pay4'?'Every 2 weeks':('6 payments'.replace('6', p.payments))} • Total ${fmt(p.total)}</div>
+        <div class="small">${p.id==='pay4'?'Every 2 weeks':'6 payments'.replace('6',p.payments)} • Total ${fmt(p.total)}</div>
         ${p.id==='pay4'?`<div style="margin-top:8px;font-weight:900">Downpayment today ${fmt(p.downpayment)}</div>`:''}
         <button class="select" data-plan='${JSON.stringify(p)}'>Select plan</button>
       </div>
     `).join('');
-    basedNote.textContent = `Based on a purchase of ${fmt(current.amount)} at ${current.merchant}.`;
-    plansSheet.classList.add('active');
+    basedNote.textContent=`Based on a purchase of ${fmt(current.amount)} at ${current.merchant}.`;
   }
 
-  // CLICK: select a plan (delegated) — robust across reflows/animations
-  plansWrap.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.select');
-    if(!btn) return;
-    try{
-      const p = JSON.parse(btn.getAttribute('data-plan'));
-      plansSheet.classList.remove('active');
-      openActivate(p);
-    }catch(err){
-      console.error('Failed to open plan', err);
-    }
+  // Delegated click for plan selection
+  plansWrap.addEventListener('click',e=>{
+    const btn=e.target.closest('.select'); if(!btn) return;
+    const p=JSON.parse(btn.getAttribute('data-plan'));
+    openActivate(p);
   });
 
-  /* Activate sheet */
-  const activateSheet = document.getElementById('activateSheet');
-  const actContent = document.getElementById('actContent');
-  const actClose = document.getElementById('actClose');
-  const actDim = document.getElementById('actDim');
-  actClose.addEventListener('click', ()=>activateSheet.classList.remove('active'));
-  actDim.addEventListener('click', ()=>activateSheet.classList.remove('active'));
-
+  /* Activate */
+  const actContent=document.getElementById('actContent');
   function openActivate(plan){
-    const interestAmt = +(plan.total - current.amount).toFixed(2);
-    const aprStr = (plan.apr||0).toFixed(2);
-    const cadenceLine = plan.id==='pay4'
+    const interestAmt=+(plan.total-current.amount).toFixed(2);
+    const aprStr=(plan.apr||0).toFixed(2);
+    const cadenceLine=plan.id==='pay4'
       ? `${fmt(plan.per)} every 2 weeks for 6 weeks`
       : `${fmt(plan.per)} every month for ${plan.payments} months`;
-    const dueTodayLabel = (plan.id==='pay4'?'Downpayment today':'Due today');
-    const dueToday = plan.downpayment;
+    const dueTodayLabel=(plan.id==='pay4'?'Downpayment today':'Due today');
+    const dueToday=plan.downpayment;
 
-    actContent.innerHTML = `
+    planTitle.textContent='Review and activate your plan';
+    wizard.style.transform='translateX(-80%)';
+
+    actContent.innerHTML=`
       <div class="box">
         <div class="summaryTitle">${cadenceLine}</div>
         <div class="small">${plan.payments} payments</div>
@@ -390,11 +327,11 @@
           <div class="dot" aria-hidden="true"></div>
           ${plan.payments>3?'<div class="dot" aria-hidden="true"></div>':''}
         </div>
-        <div class="helper" style="margin-top:8px">These due dates are close estimates.</div>
+        <div class="subtle" style="text-align:left;margin:8px 0 0 4px">These due dates are close estimates.</div>
       </div>
 
       <div class="box">
-        <h4>${dueTodayLabel}<span style="float:right">${fmt(dueToday)}</span></h4>
+        <h4 style="margin:2px 0 8px">${dueTodayLabel}<span style="float:right">${fmt(dueToday)}</span></h4>
         <div class="line"><div>Purchase amount</div><div>${fmt(current.amount)}</div></div>
         <div class="line"><div>Interest (${aprStr}% APR)</div><div>${fmt(interestAmt)}</div></div>
         <div class="line" style="font-weight:900"><div>Total of payments</div><div>${fmt(plan.total)}</div></div>
@@ -402,27 +339,25 @@
 
       <div class="box">
         <h4>Activate, then swipe</h4>
-        <div class="helper">Your plan won't start until you check out with your Affirm Card.</div>
+        <div class="subtle" style="text-align:left">Your plan won't start until you check out with your Affirm Card.</div>
       </div>
 
       <label class="agree">
         <input id="agreeCk" type="checkbox"/>
         <span>By continuing, you authorize the payment due today and agree to the
-          <a class="linkish" href="#" onclick="event.preventDefault()">One-Time Payment Authorization</a>
-          and the <a class="linkish" href="#" onclick="event.preventDefault()">Autopay Authorization</a>.
+          <a href="#" onclick="event.preventDefault()">One-Time Payment Authorization</a>
+          and the <a href="#" onclick="event.preventDefault()">Autopay Authorization</a>.
           I have reviewed and agree to the
-          <a class="linkish" href="#" onclick="event.preventDefault()">Payment Agreement &amp; Disclosures</a>
+          <a href="#" onclick="event.preventDefault()">Payment Agreement &amp; Disclosures</a>
           and ${current.merchant} refund policy.
         </span>
       </label>
 
       <button class="bigbtn" id="activateBtn" disabled>Activate my plan</button>
     `;
-
-    activateSheet.classList.add('active');
-    const ck = actContent.querySelector('#agreeCk');
-    const ab = actContent.querySelector('#activateBtn');
-    ck.addEventListener('change', ()=>{ ab.disabled = !ck.checked; });
+    const ck=actContent.querySelector('#agreeCk');
+    const ab=actContent.querySelector('#activateBtn');
+    ck.addEventListener('change',()=>{ ab.disabled=!ck.checked; });
   }
 
 })();
