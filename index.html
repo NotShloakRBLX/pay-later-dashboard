@@ -1,218 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>Card</title>
 <style>
   :root{
-    --bg:#f4f6fb; --ink:#0c1324; --muted:#6d7280; --brand:#0b0f3b;
-    --card:#ffffff; --outline:#e5e8f1; --radius:24px;
-    --t:.25s cubic-bezier(.2,.8,.2,1);
+    --bg:#f2f3f5; --ink:#0c1324; --muted:#6d7280; --brand:#0b0f3b;
+    --pill:#0b0f3b; --pill-bg:#e9ebf0; --card:#fff; --outline:#cfd5e1;
+    --accent:#0a0f3b; --primary:#0a0f3b; --primaryText:#fff;
+    --radius:22px; --t:.28s cubic-bezier(.2,.8,.2,1);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font:16px/1.35 ui-sans-serif,system-ui,"SF Pro Text",Inter,Segoe UI,Roboto,Helvetica,Arial;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  .app{max-width:430px;margin:0 auto;min-height:100svh;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px}
+  .topbar h1{margin:0;font-size:34px;letter-spacing:.2px}
+  .tb-icons{display:flex;gap:12px}
+  .ib{width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid #eceff4;display:grid;place-items:center}
+  .views{position:relative;flex:1;overflow:hidden}
+  .viewWrap{display:flex;width:300%;height:100%;transition:transform var(--t)}
+  .view{width:100%;height:100%;overflow:auto;padding:0 14px 90px}
 
-  /* Layout */
-  main{max-width:760px;margin:0 auto;padding:12px 18px calc(20px + env(safe-area-inset-bottom))}
-  .page-title{margin:6px 2px 14px;font-size:34px;font-weight:800;letter-spacing:-.02em}
-  .sr{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+  /* card */
+  .card{background:var(--card);border-radius:26px;padding:16px 16px 20px;margin:8px 6px 0;box-shadow:0 18px 40px rgba(12,19,36,.08)}
+  .switch{position:relative;background:#eef0f4;border-radius:999px;padding:8px}
+  .switchInner{display:grid;grid-template-columns:1fr 1fr;position:relative}
+  .thumb{position:absolute;inset:6px auto 6px 6px;width:calc(50% - 6px);border-radius:999px;background:#0c0f27;color:#fff;box-shadow:0 8px 20px rgba(12,19,36,.25);transition:transform var(--t)}
+  .thumb.r{transform:translateX(100%)}
+  .sw-btn{position:relative;z-index:1;border:0;background:transparent;padding:12px 8px;border-radius:999px;
+    font-weight:800;color:#fff}
+  .sw-btn:nth-child(2){color:#222}
+  .chip{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;padding:12px 14px;border-radius:999px;font-weight:800}
+  .chip svg{width:18px;height:18px}
+  .power{margin:16px 0 12px}
+  .big{font-size:64px;line-height:1;font-weight:900;letter-spacing:-.5px;margin:8px 10px}
+  .cta{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;
+    font-weight:900;padding:16px;margin:10px 0 8px}
+  .subtle{color:var(--muted);text-align:center;margin:0 10px 4px}
+  .outline{display:block;width:100%;border-radius:999px;background:#fff;border:2px solid #0a0f3b;color:#0a0f3b;font-weight:900;padding:14px}
+  .center{display:flex;justify-content:center}
+  .linkish{color:#0a0f3b;text-decoration:none}
+  .bankTag{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;border-radius:999px;padding:12px 16px;font-weight:800}
+  .bankTag svg{width:18px;height:18px}
+  .pages{display:flex;width:200%;transition:transform var(--t)}
+  .page{width:100%}
 
-  /* Segmented control */
-  .segmented{
-    --pad:6px;
-    display:grid; grid-template-columns:1fr 1fr; position:relative; isolation:isolate;
-    background:#e9edf5; padding:var(--pad); border-radius:999px;
-    box-shadow:inset 0 0 0 1px var(--outline);
-    margin:6px 2px 18px; overflow:hidden;
-    touch-action:manipulation;
-  }
-  .segmented .thumb{
-    position:absolute; top:var(--pad); bottom:var(--pad); left:var(--pad);
-    width:calc((100% - (var(--pad) * 2)) / 2); /* exact half of track, no drift */
-    background:var(--brand); border-radius:999px;
-    box-shadow:0 10px 22px rgba(11,15,59,.25);
-    transform:translate3d(0,0,0); transition:transform var(--t);
-    will-change:transform; pointer-events:none;
-  }
-  .segmented[data-active="1"] .thumb{ transform:translate3d(100%,0,0); }
-  .segmented button{
-    -webkit-tap-highlight-color:transparent; user-select:none;
-    border:0; background:none; padding:12px 18px; border-radius:999px;
-    font-weight:800; font-size:15px; color:#1e2743; z-index:1; cursor:pointer;
-  }
-  .segmented[data-active="0"] button:first-of-type,
-  .segmented[data-active="1"] button:last-of-type{ color:#fff; }
+  /* bottom nav */
+  .tabs{position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6ee;display:flex;gap:2px;justify-content:space-around;padding:8px 6px;z-index:2}
+  .tab{flex:1;text-align:center;padding:8px 0;color:#4b5160;text-decoration:none;font-weight:800}
+  .tab.active{color:#0a0f3b}
 
-  /* Cards / panels */
-  .card{
-    background:var(--card); border-radius:var(--radius);
-    padding:18px 18px 20px; margin:0 2px 18px;
-    box-shadow:0 18px 40px rgba(7,13,40,.08);
-    overflow:hidden; /* prevents any visual bleed */
-  }
-  .kicker,.chip{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:8px 12px;border-radius:999px;border:1px solid var(--outline);
-    color:#1f2745;background:#f7f9ff
-  }
-  .kicker svg{width:16px;height:16px}
-  .big{font-size:48px;line-height:1;font-weight:800;letter-spacing:-.02em;margin:14px 2px 8px}
-  .sub{color:var(--muted);margin:4px 2px 14px}
+  /* Manage (original content) */
+  .manage h2{margin:18px 10px 8px}
+  .seg{display:flex;gap:26px;margin:12px 10px;border-bottom:2px solid #e6e9f1}
+  .seg button{appearance:none;border:0;background:transparent;padding:12px 0;font-weight:800;color:#0a0f3b;position:relative}
+  .seg button::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:3px;background:#0a0f3b;border-radius:2px}
+  .empty{color:#6c7486;margin:26px 12px 0}
 
-  .primary,.ghost{
-    width:100%; padding:14px 18px; border-radius:999px; font-weight:800;
-    border:1.5px solid #0d153a; transition:transform var(--t),opacity var(--t);
-  }
-  .primary{background:#0d153a;color:#fff}
-  .ghost{background:transparent;color:#0d153a}
-  .primary:active,.ghost:active{transform:translateY(1px)}
+  /* Plan page (uses same visual language as the sheet) */
+  .planTop{display:flex;align-items:center;gap:10px;padding:14px 6px 8px}
+  .back{border:0;background:#fff;border:1px solid #e6e9f1;width:40px;height:40px;border-radius:12px;font-weight:900}
+  .planTop .title{font-size:22px;font-weight:900;margin:0}
+  .pad{padding:6px 2px 18px}
+  .ask{margin:16px 8px 6px;font-weight:900}
+  .inp{width:100%;border:1px solid #d9e0ec;border-radius:14px;padding:14px 14px;font:inherit}
+  .bar{position:sticky;bottom:66px;display:flex}      /* keep above bottom tabs */
+  .barCta{background:#0a0f3b;color:#fff;font-weight:900;border:0;padding:16px;border-radius:12px;width:100%;margin:0 2px}
+  .helper{color:#6b7184;margin:8px 8px 0}
+  .planPages{display:flex;width:400%;transition:transform var(--t)}
+  .planPage{width:100%}
 
-  /* Plan a purchase screen */
-  .inline-header{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
-  .inline-header .page-title{margin:0}
-  .back{
-    border:0;background:#eef2fb;border-radius:12px; width:40px;height:40px;
-    font-size:22px;line-height:40px;text-align:center;cursor:pointer;
-  }
-  .sheet{background:var(--card);border-radius:var(--radius);padding:16px 16px 18px;box-shadow:0 18px 40px rgba(7,13,40,.08)}
-  .field{display:flex;flex-direction:column;gap:8px;margin:4px 0 12px}
-  .field span{font-weight:700}
-  input{
-    font:inherit; padding:14px 14px; border-radius:16px;
-    border:1.5px solid #cfd5e7; outline:0; background:#ffffff;
-    box-shadow:0 4px 0 rgba(12,19,36,.03) inset;
-  }
-  button[disabled]{opacity:.45;pointer-events:none}
+  /* loading */
+  .spinner{width:30px;height:30px;border-radius:50%;border:4px solid #e7eaf2;border-top-color:#0a0f3b;animation:spin 1s linear infinite;margin-left:auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* Bottom tab bar */
-  .tabs{
-    position:sticky;bottom:0;left:0;right:0;
-    backdrop-filter:saturate(180%) blur(12px);
-    background:rgba(250,252,255,.75);
-    border-top:1px solid var(--outline);
-    padding:8px max(16px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right));
-    display:flex;gap:18px;justify-content:center;font-weight:800
-  }
-  .tabs button{
-    border:0;background:none;padding:10px 12px;border-radius:12px;cursor:pointer;
-    color:#1c2644
-  }
-  .tabs button[aria-current="page"]{background:#e9edf6}
+  /* plans list */
+  .plans{padding:0 2px 20px}
+  .plan{background:#fff;border:1px solid #e6eaf2;border-radius:20px;padding:14px 14px 16px;margin:12px 0;box-shadow:0 10px 26px rgba(12,19,36,.06)}
+  .plan .hdr{display:flex;justify-content:space-between;align-items:center}
+  .pill{font-size:12px;border-radius:999px;background:#eef1f6;padding:6px 10px;font-weight:900}
+  .price{font-size:34px;font-weight:900;margin:8px 0 2px}
+  .small{color:#6a7285;font-weight:700}
+  .select{display:block;width:100%;background:#0a0f3b;color:#fff;border:0;border-radius:12px;font-weight:900;padding:12px;margin-top:12px}
+  .based{color:#6b7280;text-align:center;margin:12px 0 20px}
 
-  @media (max-width:420px){
-    .big{font-size:42px}
-  }
+  /* Activate sheet (unchanged) */
+  .sheet{position:fixed;inset:0;display:grid;place-items:end center;pointer-events:none;z-index:30}
+  .sheet.active{pointer-events:auto}
+  .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--t)}
+  .sheet.active .dim{opacity:1}
+  .panel{width:100%;max-width:430px;background:#fff;border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform var(--t);box-shadow:0 -20px 36px rgba(12,19,36,.25)}
+  .sheet.active .panel{transform:translateY(0)}
+  .head{display:flex;align-items:center;justify-content:center;padding:12px 14px 2px;position:relative}
+  .x{position:absolute;left:12px;top:8px;width:40px;height:40px;border-radius:14px;border:0;background:#edf0f6;font-size:20px;font-weight:900}
+  .fullSheet .panel{height:92svh}
+  .detailWrap{padding:12px 16px 26px}
+  .box{background:#fff;border:1px solid #e4e8f2;border-radius:18px;padding:14px 14px 10px;margin:10px 0}
+  .box h4{margin:2px 0 8px;font-size:16px}
+  .line{display:flex;justify-content:space-between;margin:8px 0}
+  .agree{display:flex;gap:10px;align-items:flex-start;margin:8px 0 0;color:#111}
+  .agree input{transform:translateY(2px) scale(1.2)}
+  .bigbtn{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;font-weight:900;padding:16px;margin:16px 0 24px}
+  .bigbtn:disabled{opacity:.5}
+  .dates{display:flex;gap:16px;margin-top:8px}
+  .dot{width:40px;height:40px;border-radius:999px;border:5px solid #e1e5f1;border-right-color:#0a0f3b}
+  .summaryTitle{font-size:18px;font-weight:900;margin-bottom:6px}
 </style>
 </head>
 <body>
-
-<!-- ===================== CARD (HOME) ===================== -->
-<main id="home" aria-labelledby="home-title">
-  <h1 id="home-title" class="page-title">Card</h1>
-
-  <div class="segmented" data-active="0" role="tablist" aria-label="Payment mode">
-    <i class="thumb" aria-hidden="true"></i>
-    <button role="tab" aria-selected="true" tabindex="0">Pay over time</button>
-    <button role="tab" aria-selected="false" tabindex="-1">Pay in full</button>
+<div class="app">
+  <div class="topbar">
+    <h1>Card</h1>
+    <div class="tb-icons">
+      <div class="ib">⚙️</div>
+      <div class="ib">👁️</div>
+      <div class="ib">💬</div>
+    </div>
   </div>
 
-  <!-- Pay over time -->
-  <section class="card" data-panel="time" role="tabpanel" aria-label="Pay over time">
-    <div class="kicker">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7Z"/>
-      </svg>
-      Purchasing power
+  <div class="views">
+    <div class="viewWrap" id="viewWrap">
+      <!-- 1) CARD VIEW -->
+      <section class="view">
+        <div class="card">
+          <!-- switcher -->
+          <div class="switch">
+            <div class="thumb" id="thumb"></div>
+            <div class="switchInner">
+              <button class="sw-btn" id="btnOver">Pay over time</button>
+              <button class="sw-btn" id="btnFull" style="font-weight:900;color:#0a0f3b">Pay in full</button>
+            </div>
+          </div>
+
+          <!-- content pages -->
+          <div class="pages" id="payPages" style="margin-top:14px">
+            <!-- Pay over time -->
+            <div class="page">
+              <div class="power">
+                <div class="chip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h7l-1 8 10-12h-7z"/></svg>
+                  Purchasing power
+                </div>
+              </div>
+              <div class="big" id="pp">$11,910</div>
+              <button class="cta" id="planBtn">Plan a purchase</button>
+            </div>
+
+            <!-- Pay in full -->
+            <div class="page">
+              <div class="center">
+                <a class="bankTag linkish" id="bankLink" href="https://notshloakrblx.github.io/savings-checking-dashboard/" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 10h18L12 4 3 10zM4 10v8M20 10v8M2 18h20"/></svg>
+                  Sapphire Checking
+                </a>
+              </div>
+              <div class="big">$298.04</div>
+              <p class="subtle">Available balance</p>
+              <a class="outline center" href="https://notshloakrblx.github.io/savings-checking-dashboard/" target="_blank" rel="noopener">Go</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2) MANAGE VIEW (original content restored) -->
+      <section class="view manage">
+        <h2 style="margin:14px 12px 0">Manage</h2>
+        <div class="seg"><button>Active</button></div>
+        <div class="empty">
+          <h3>Your purchases are paid off</h3>
+          <p>Explore exclusive deals and get flexible payment plans at top stores.</p>
+        </div>
+      </section>
+
+      <!-- 3) PLAN PAGE (full page) -->
+      <section class="view" id="planView">
+        <div class="planTop">
+          <button class="back" id="planBack">‹</button>
+          <div class="title">Plan a purchase</div>
+        </div>
+
+        <div class="planPages" id="planPages">
+          <!-- Q1 -->
+          <div class="planPage">
+            <div class="pad">
+              <div class="ask">Merchant</div>
+              <input id="merchant" class="inp" placeholder="e.g., Amazon"/>
+            </div>
+            <div class="bar"><button class="barCta" id="toQ2">Continue</button></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="planPage">
+            <div class="pad">
+              <div class="ask">Purchase amount</div>
+              <input id="amount" class="inp" inputmode="decimal" pattern="[0-9]*" placeholder="0.00"/>
+              <p class="helper">Numbers only. You’ll see plans next.</p>
+            </div>
+            <div class="bar"><button class="barCta" id="toLoading">Continue</button></div>
+          </div>
+
+          <!-- Loading -->
+          <div class="planPage">
+            <div class="pad" style="display:flex;align-items:center;gap:14px">
+              <div>
+                <div class="title" style="margin:0 0 6px" id="loadingTitle">Plans for …</div>
+                <div class="helper">Finding plans for you</div>
+              </div>
+              <div class="spinner" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- Plans list -->
+          <div class="planPage">
+            <div class="pad"><div class="ask" style="margin-top:4px">Plans</div></div>
+            <div class="plans" id="plansWrap"></div>
+            <p class="based" id="basedNote"></p>
+          </div>
+        </div>
+      </section>
     </div>
-    <div class="big">$11,910</div>
-    <button class="primary plan-btn" type="button">Plan a purchase</button>
-  </section>
+  </div>
 
-  <!-- Pay in full -->
-  <section class="card" data-panel="full" role="tabpanel" aria-label="Pay in full" hidden>
-    <div class="chip">🏦&nbsp;Sapphire Checking</div>
-    <div class="big">$298.04</div>
-    <div class="sub">Available balance</div>
-    <button class="ghost" type="button">Go</button>
-  </section>
-</main>
+  <!-- bottom tabs -->
+  <div class="tabs">
+    <a class="tab active" id="tabCard" href="#">Card</a>
+    <a class="tab" id="tabManage" href="#">Manage</a>
+  </div>
+</div>
 
-<!-- ===================== PLAN A PURCHASE ===================== -->
-<main id="plan" hidden aria-labelledby="plan-title">
-  <header class="inline-header">
-    <button class="back" type="button" onclick="route('home')" aria-label="Back">‹</button>
-    <h1 id="plan-title" class="page-title">Plan a purchase</h1>
-  </header>
-
-  <form class="sheet" onsubmit="return false;">
-    <label class="field">
-      <span>Merchant</span>
-      <input id="merchant" placeholder="e.g., Amazon" inputmode="text" autocomplete="off" />
-    </label>
-    <button id="continue" class="primary" type="submit" disabled>Continue</button>
-  </form>
-</main>
-
-<!-- ===================== MANAGE (placeholder) ===================== -->
-<main id="manage" hidden aria-labelledby="manage-title">
-  <h1 id="manage-title" class="page-title">Manage</h1>
-  <section class="card">
-    <div class="sub">Settings & details coming soon.</div>
-  </section>
-</main>
-
-<!-- Bottom Tabs -->
-<nav class="tabs" aria-label="Primary">
-  <button id="tab-card"   aria-current="page" onclick="openTab('home')">Card</button>
-  <button id="tab-manage" aria-current="false" onclick="openTab('manage')">Manage</button>
-</nav>
+<!-- ACTIVATE SHEET (unchanged) -->
+<div class="sheet fullSheet" id="activateSheet">
+  <div class="dim" id="actDim"></div>
+  <div class="panel">
+    <div class="head">
+      <button class="x" id="actClose">×</button>
+      <div class="title">Review and activate your plan</div>
+    </div>
+    <div class="detailWrap" id="actContent"></div>
+  </div>
+</div>
 
 <script>
-  // ------- Segmented control logic -------
-  const seg = document.querySelector('.segmented');
-  const segBtns = seg.querySelectorAll('button');
-  const panels = {
-    time: document.querySelector('[data-panel="time"]'),
-    full: document.querySelector('[data-panel="full"]')
-  };
-  function setMode(idx){
-    seg.dataset.active = idx;
-    segBtns.forEach((b,i)=>{
-      const sel = i===idx;
-      b.setAttribute('aria-selected', sel);
-      b.tabIndex = sel ? 0 : -1;
+(()=>{
+
+  /* -------- App-level paging (3 views): Card / Manage / Plan -------- */
+  const viewWrap = document.getElementById('viewWrap');
+  const tabCard   = document.getElementById('tabCard');
+  const tabManage = document.getElementById('tabManage');
+  function goto(idx){ viewWrap.style.transform = `translateX(${-33.3333*idx}%)`; }
+  tabCard.addEventListener('click', (e)=>{e.preventDefault(); goto(0); tabCard.classList.add('active'); tabManage.classList.remove('active');});
+  tabManage.addEventListener('click', (e)=>{e.preventDefault(); goto(1); tabManage.classList.add('active'); tabCard.classList.remove('active');});
+
+  /* -------- Pay over time / Pay in full switcher -------- */
+  const pages = document.getElementById('payPages');
+  const btnOver = document.getElementById('btnOver');
+  const btnFull = document.getElementById('btnFull');
+  const thumb = document.getElementById('thumb');
+  function setMode(m){ pages.style.transform = (m==='over')?'translateX(0%)':'translateX(-50%)'; thumb.classList.toggle('r', m!=='over'); }
+  btnOver.addEventListener('click', ()=>setMode('over'));
+  btnFull.addEventListener('click', ()=>setMode('full'));
+
+  /* -------- Plan page flow (Q1 → Q2 → Loading → Plans) -------- */
+  const planBtn    = document.getElementById('planBtn');
+  const planBack   = document.getElementById('planBack');
+  const planPages  = document.getElementById('planPages');
+  const toQ2       = document.getElementById('toQ2');
+  const toLoading  = document.getElementById('toLoading');
+  const merchantEl = document.getElementById('merchant');
+  const amountEl   = document.getElementById('amount');
+  const loadingTitle = document.getElementById('loadingTitle');
+
+  const current = {merchant:'', amount:0};
+
+  function planGoto(step){ planPages.style.transform = `translateX(${-25*step}%)`; }
+  planBtn.addEventListener('click', ()=>{ goto(2); planGoto(0); merchantEl.value=''; amountEl.value=''; setTimeout(()=>merchantEl.focus(), 200); });
+  planBack.addEventListener('click', ()=>{ goto(0); });
+
+  toQ2.addEventListener('click', ()=>{ planGoto(1); setTimeout(()=>amountEl.focus(), 220); });
+
+  toLoading.addEventListener('click', ()=>{
+    const m = (merchantEl.value||'').trim() || 'Store';
+    const raw = (amountEl.value||'0').replace(/[^\d.]/g,'');
+    const amt = Math.max(0, parseFloat(raw||'0'));
+    if(!isFinite(amt) || amt<=0){ amountEl.focus(); return; }
+    current.merchant = m;
+    current.amount = Math.round(amt*100)/100;
+    loadingTitle.textContent = `Plans for ${m}`;
+    planGoto(2);
+    setTimeout(()=>{ renderPlans(); planGoto(3); }, 3000); // 3s loader
+  });
+
+  /* -------- Build plans + render into plan page -------- */
+  const plansWrap = document.getElementById('plansWrap');
+  const basedNote = document.getElementById('basedNote');
+
+  function fmt(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD'}); }
+
+  function makePlans(amt){
+    const items=[];
+    const p4 = +(amt/4).toFixed(2);
+    items.push({ id:'pay4', name:'Bi-weekly (Pay in 4)', apr:0, payments:4, per:p4, total:+(p4*4).toFixed(2), downpayment:p4, tag:'0% APR' });
+    const total6 = +(amt*1.20).toFixed(2);
+    const per6   = +(total6/6).toFixed(2);
+    items.push({ id:'m6', name:'6 months', apr:20, payments:6, per:per6, total:total6, downpayment:per6, tag:'20% APR' });
+    if(amt>=100){
+      const total12 = +(amt*1.25).toFixed(2);
+      const per12   = +(total12/12).toFixed(2);
+      items.push({ id:'m12', name:'12 months', apr:25, payments:12, per:per12, total:total12, downpayment:per12, tag:'25% APR' });
+    }
+    return items;
+  }
+
+  function renderPlans(){
+    const list = makePlans(current.amount);
+    plansWrap.innerHTML = list.map(p=>`
+      <div class="plan">
+        <div class="hdr">
+          <div style="font-weight:900">${p.name}</div>
+          <div class="pill">${p.tag}</div>
+        </div>
+        <div class="price">${fmt(p.per)} <span class="small">${p.id==='pay4'?'x 4':'/ mo'}</span></div>
+        <div class="small">${p.id==='pay4'?'Every 2 weeks':'6 payments'.replace('6', p.payments)} • Total ${fmt(p.total)}</div>
+        ${p.id==='pay4'?`<div style="margin-top:8px;font-weight:900">Downpayment today ${fmt(p.downpayment)}</div>`:''}
+        <button class="select" data-plan='${JSON.stringify(p)}'>Select plan</button>
+      </div>
+    `).join('');
+    basedNote.textContent = `Based on a purchase of ${fmt(current.amount)} at ${current.merchant}.`;
+
+    plansWrap.querySelectorAll('.select').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const p = JSON.parse(btn.getAttribute('data-plan'));
+        openActivate(p);
+      });
     });
-    panels.time.hidden = idx!==0;
-    panels.full.hidden = idx!==1;
   }
-  segBtns.forEach((btn,i)=>btn.addEventListener('click', ()=>setMode(i)));
-  setMode(0);
 
-  // ------- Routing between screens -------
-  const screens = { home:document.getElementById('home'),
-                    plan:document.getElementById('plan'),
-                    manage:document.getElementById('manage') };
+  /* -------- Activate sheet (unchanged) -------- */
+  const activateSheet = document.getElementById('activateSheet');
+  const actContent = document.getElementById('actContent');
+  const actClose = document.getElementById('actClose');
+  const actDim = document.getElementById('actDim');
+  actClose.addEventListener('click', ()=>activateSheet.classList.remove('active'));
+  actDim.addEventListener('click', ()=>activateSheet.classList.remove('active'));
 
-  function route(name){
-    for(const k in screens){ screens[k].hidden = (k!==name); }
-    document.getElementById('tab-card').setAttribute('aria-current', name==='home' ? 'page' : 'false');
-    document.getElementById('tab-manage').setAttribute('aria-current', name==='manage' ? 'page' : 'false');
-    window.scrollTo({top:0,behavior:'instant'});
+  function openActivate(plan){
+    const interestAmt = +(plan.total - current.amount).toFixed(2);
+    const aprStr = (plan.apr||0).toFixed(2);
+    const cadenceLine =
+      plan.id==='pay4'
+        ? `${fmt(plan.per)} every 2 weeks for 6 weeks`
+        : `${fmt(plan.per)} every month for ${plan.payments} months`;
+    const dueTodayLabel = (plan.id==='pay4'?'Downpayment today':'Due today');
+    const dueToday = plan.downpayment;
+
+    actContent.innerHTML = `
+      <div class="box">
+        <div class="summaryTitle">${cadenceLine}</div>
+        <div class="small">${plan.payments} payments</div>
+        <div class="dates">
+          <div class="dot" aria-hidden="true"></div>
+          <div class="dot" aria-hidden="true"></div>
+          <div class="dot" aria-hidden="true"></div>
+          ${plan.payments>3?'<div class="dot" aria-hidden="true"></div>':''}
+        </div>
+        <div class="helper" style="margin-top:8px">These due dates are close estimates.</div>
+      </div>
+
+      <div class="box">
+        <h4>${dueTodayLabel}<span style="float:right">${fmt(dueToday)}</span></h4>
+        <div class="line"><div>Purchase amount</div><div>${fmt(current.amount)}</div></div>
+        <div class="line"><div>Interest (${aprStr}% APR)</div><div>${fmt(interestAmt)}</div></div>
+        <div class="line" style="font-weight:900"><div>Total of payments</div><div>${fmt(plan.total)}</div></div>
+      </div>
+
+      <div class="box">
+        <h4>Activate, then swipe</h4>
+        <div class="helper">Your plan won't start until you check out with your Affirm Card.</div>
+      </div>
+
+      <label class="agree">
+        <input id="agreeCk" type="checkbox"/>
+        <span>By continuing, you authorize the payment due today and agree to the
+          <a class="linkish" href="#" onclick="event.preventDefault()">One-Time Payment Authorization</a>
+          and the <a class="linkish" href="#" onclick="event.preventDefault()">Autopay Authorization</a>.
+          I have reviewed and agree to the
+          <a class="linkish" href="#" onclick="event.preventDefault()">Payment Agreement &amp; Disclosures</a>
+          and ${current.merchant} refund policy.
+        </span>
+      </label>
+
+      <button class="bigbtn" id="activateBtn" disabled>Activate my plan</button>
+    `;
+    activateSheet.classList.add('active');
+    const ck = actContent.querySelector('#agreeCk');
+    const ab = actContent.querySelector('#activateBtn');
+    ck.addEventListener('change', ()=>{ ab.disabled = !ck.checked; });
   }
-  function openTab(name){ route(name); }
-  document.querySelector('.plan-btn').addEventListener('click', ()=>route('plan'));
-  window.route = route; window.openTab = openTab;
 
-  // ------- Plan a purchase: enable Continue when text is present -------
-  const merch = document.getElementById('merchant');
-  const cont  = document.getElementById('continue');
-  merch.addEventListener('input', ()=>{ cont.disabled = merch.value.trim()===''; });
+})();
 </script>
 </body>
 </html>
