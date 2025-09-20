@@ -1,406 +1,662 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Card</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Buy Now, Pay Later — Dashboard</title>
 <style>
   :root{
-    --bg:#f2f3f5; --ink:#0c1324; --muted:#6d7280; --brand:#0b0f3b;
-    --pill:#0b0f3b; --pill-bg:#e9ebf0; --card:#fff; --outline:#cfd5e1;
-    --accent:#0a0f3b; --primary:#0a0f3b; --primaryText:#fff;
-    --radius:22px; --t:.28s cubic-bezier(.2,.8,.2,1);
+    --bg: #0b0f14;
+    --surface: #11161d;
+    --card: #121824;
+    --elev: #0e1420;
+    --ink: #e9eef7;
+    --muted: #a8b3c7;
+    --brand: #5b8cff;
+    --brand-2:#8a7dff;
+    --ok: #2fd39b;
+    --warn:#ffcc66;
+    --danger:#ff6b6b;
+    --outline:#233043;
+    --glass: rgba(255,255,255,.06);
+    --radius: 16px;
+    --t: .22s cubic-bezier(.2,.8,.2,1);
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    color-scheme: dark;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font:15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Helvetica,Arial}
-  .app{max-width:430px;margin:0 auto;min-height:100svh;display:flex;flex-direction:column}
-  .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px}
-  .topbar h1{margin:0;font-size:34px;letter-spacing:.2px}
-  .tb-icons{display:flex;gap:12px}
-  .ib{width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid #eceff4;display:grid;place-items:center}
-  .views{position:relative;flex:1;overflow:hidden}
-  .viewWrap{display:flex;width:300%;height:100%;transition:transform var(--t)}
-  .view{width:100%;height:100%;overflow:auto;padding:0 14px 90px}
+  body{
+    margin:0; font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    background:
+      radial-gradient(1200px 600px at 80% -20%, rgba(91,140,255,.35), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(138,125,255,.30), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+  }
 
-  /* card */
-  .card{background:var(--card);border-radius:26px;padding:16px 16px 20px;margin:8px 6px 0;box-shadow:0 18px 40px rgba(12,19,36,.08)}
-  .switch{position:relative;background:#eef0f4;border-radius:999px;padding:8px}
-  .switchInner{display:grid;grid-template-columns:1fr 1fr;position:relative}
-  .thumb{position:absolute;inset:6px auto 6px 6px;width:calc(50% - 6px);border-radius:999px;background:#0c0f27;color:#fff;box-shadow:0 8px 20px rgba(12,19,36,.25);transition:transform var(--t)}
-  .thumb.r{transform:translateX(100%)}
-  .sw-btn{position:relative;z-index:1;border:0;background:transparent;padding:12px 8px;border-radius:999px;
-    font-weight:800;color:#fff}
-  .sw-btn:nth-child(2){color:#222}
-  .chip{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;padding:12px 14px;border-radius:999px;font-weight:800}
-  .chip svg{width:18px;height:18px}
-  .power{margin:16px 0 12px}
-  .big{font-size:64px;line-height:1;font-weight:900;letter-spacing:-.5px;margin:8px 10px}
-  .cta{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;
-    font-weight:900;padding:16px;margin:10px 0 8px}
-  .subtle{color:var(--muted);text-align:center;margin:0 10px 4px}
-  .outline{display:block;width:100%;border-radius:999px;background:#fff;border:2px solid #0a0f3b;color:#0a0f3b;font-weight:900;padding:14px}
-  .center{display:flex;justify-content:center}
-  .linkish{color:#0a0f3b;text-decoration:none}
-  .bankTag{display:inline-flex;align-items:center;gap:10px;border:1px solid #e5e9f3;background:#fff;border-radius:999px;padding:12px 16px;font-weight:800}
-  .bankTag svg{width:18px;height:18px}
-  .pages{display:flex;width:200%;transition:transform var(--t)}
-  .page{width:100%}
+  .app{
+    max-width: 1200px; margin: 24px auto; padding: 0 16px 120px;
+  }
 
-  /* bottom nav */
-  .tabs{position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6ee;display:flex;gap:2px;justify-content:space-around;padding:8px 6px;z-index:2}
-  .tab{flex:1;text-align:center;padding:8px 0;color:#4b5160;text-decoration:none;font-weight:800}
-  .tab.active{color:#0a0f3b}
+  header{
+    display:flex; align-items:center; gap:16px; margin: 8px 0 18px;
+  }
+  .logo{
+    width:44px;height:44px;border-radius:12px;
+    background: linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center; box-shadow: var(--shadow);
+  }
+  .logo svg{width:24px;height:24px;fill:#fff}
+  .title h1{margin:0;font-size:22px;letter-spacing:.2px}
+  .title p{margin:2px 0 0;color:var(--muted);font-size:13px}
 
-  /* Manage (original content) */
-  .manage h2{margin:18px 10px 8px}
-  .seg{display:flex;gap:26px;margin:12px 10px;border-bottom:2px solid #e6e9f1}
-  .seg button{appearance:none;border:0;background:transparent;padding:12px 0;font-weight:800;color:#0a0f3b;position:relative}
-  .seg button::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:3px;background:#0a0f3b;border-radius:2px}
-  .empty{color:#6c7486;margin:26px 12px 0}
+  .toolbar{
+    margin: 16px 0 8px;
+    display:flex;gap:8px;flex-wrap:wrap; align-items:center;
+  }
+  .chip{
+    padding:10px 12px;border:1px solid var(--outline);
+    border-radius:999px;background:var(--glass);backdrop-filter:saturate(140%) blur(6px);
+    font-size:13px;color:var(--ink);
+  }
+  .chip b{color:#fff}
+  .spacer{flex:1}
 
-  /* Plan page (uses same visual language as the sheet) */
-  .planTop{display:flex;align-items:center;gap:10px;padding:14px 6px 8px}
-  .back{border:0;background:#fff;border:1px solid #e6e9f1;width:40px;height:40px;border-radius:12px;font-weight:900}
-  .planTop .title{font-size:22px;font-weight:900;margin:0}
-  .pad{padding:6px 2px 18px}
-  .ask{margin:16px 8px 6px;font-weight:900}
-  .inp{width:100%;border:1px solid #d9e0ec;border-radius:14px;padding:14px 14px;font:inherit}
-  .bar{position:sticky;bottom:66px;display:flex}      /* keep above bottom tabs */
-  .barCta{background:#0a0f3b;color:#fff;font-weight:900;border:0;padding:16px;border-radius:12px;width:100%;margin:0 2px}
-  .helper{color:#6b7184;margin:8px 8px 0}
-  .planPages{display:flex;width:400%;transition:transform var(--t)}
-  .planPage{width:100%}
+  .btn{
+    appearance:none;border:1px solid transparent;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;
+    transition:transform var(--t), box-shadow var(--t), filter var(--t);
+    box-shadow: 0 6px 18px rgba(91,140,255,.3);
+  }
+  .btn:active{transform:translateY(1px);filter:saturate(1.05)}
+  .btn.secondary{
+    background: transparent;border-color: var(--outline);color:#e9eef7; box-shadow:none;
+  }
 
-  /* loading */
-  .spinner{width:30px;height:30px;border-radius:50%;border:4px solid #e7eaf2;border-top-color:#0a0f3b;animation:spin 1s linear infinite;margin-left:auto}
-  @keyframes spin{to{transform:rotate(360deg)}}
+  .grid{
+    display:grid; gap:14px;
+    grid-template-columns: repeat(12,1fr);
+  }
+  .col-3{grid-column: span 3}
+  .col-4{grid-column: span 4}
+  .col-5{grid-column: span 5}
+  .col-6{grid-column: span 6}
+  .col-7{grid-column: span 7}
+  .col-8{grid-column: span 8}
+  .col-12{grid-column: span 12}
 
-  /* plans list */
-  .plans{padding:0 2px 20px}
-  .plan{background:#fff;border:1px solid #e6eaf2;border-radius:20px;padding:14px 14px 16px;margin:12px 0;box-shadow:0 10px 26px rgba(12,19,36,.06)}
-  .plan .hdr{display:flex;justify-content:space-between;align-items:center}
-  .pill{font-size:12px;border-radius:999px;background:#eef1f6;padding:6px 10px;font-weight:900}
-  .price{font-size:34px;font-weight:900;margin:8px 0 2px}
-  .small{color:#6a7285;font-weight:700}
-  .select{display:block;width:100%;background:#0a0f3b;color:#fff;border:0;border-radius:12px;font-weight:900;padding:12px;margin-top:12px}
-  .based{color:#6b7280;text-align:center;margin:12px 0 20px}
+  @media (max-width: 980px){
+    .col-3,.col-4,.col-5,.col-6,.col-7,.col-8{grid-column: span 12}
+  }
 
-  /* Activate sheet (unchanged) */
-  .sheet{position:fixed;inset:0;display:grid;place-items:end center;pointer-events:none;z-index:30}
-  .sheet.active{pointer-events:auto}
-  .dim{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--t)}
-  .sheet.active .dim{opacity:1}
-  .panel{width:100%;max-width:430px;background:#fff;border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform var(--t);box-shadow:0 -20px 36px rgba(12,19,36,.25)}
-  .sheet.active .panel{transform:translateY(0)}
-  .head{display:flex;align-items:center;justify-content:center;padding:12px 14px 2px;position:relative}
-  .x{position:absolute;left:12px;top:8px;width:40px;height:40px;border-radius:14px;border:0;background:#edf0f6;font-size:20px;font-weight:900}
-  .fullSheet .panel{height:92svh}
-  .detailWrap{padding:12px 16px 26px}
-  .box{background:#fff;border:1px solid #e4e8f2;border-radius:18px;padding:14px 14px 10px;margin:10px 0}
-  .box h4{margin:2px 0 8px;font-size:16px}
-  .line{display:flex;justify-content:space-between;margin:8px 0}
-  .agree{display:flex;gap:10px;align-items:flex-start;margin:8px 0 0;color:#111}
-  .agree input{transform:translateY(2px) scale(1.2)}
-  .bigbtn{display:block;width:100%;border:0;border-radius:999px;background:#0a0f3b;color:#fff;font-weight:900;padding:16px;margin:16px 0 24px}
-  .bigbtn:disabled{opacity:.5}
-  .dates{display:flex;gap:16px;margin-top:8px}
-  .dot{width:40px;height:40px;border-radius:999px;border:5px solid #e1e5f1;border-right-color:#0a0f3b}
-  .summaryTitle{font-size:18px;font-weight:900;margin-bottom:6px}
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid var(--outline); border-radius: var(--radius); padding:16px;
+    box-shadow: var(--shadow);
+  }
+  .card h3{margin:0 0 12px;font-size:14px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+  .big{
+    display:flex; align-items:baseline; gap:10px; margin:8px 0 6px; font-size:30px; font-weight:800;
+  }
+  .sub{color:var(--muted);font-size:13px}
+  .trend{font-size:12px;border-radius:999px;padding:4px 8px;font-weight:700}
+  .trend.ok{background: rgba(47,211,155,.12); color: var(--ok); border:1px solid rgba(47,211,155,.3)}
+  .trend.warn{background: rgba(255,204,102,.12); color: var(--warn); border:1px solid rgba(255,204,102,.3)}
+  .trend.danger{background: rgba(255,107,107,.12); color: var(--danger); border:1px solid rgba(255,107,107,.3)}
+
+  .progress{
+    height:8px;border-radius:999px;background:#111826;border:1px solid #223045; overflow:hidden;
+  }
+  .progress > span{
+    display:block;height:100%; background: linear-gradient(90deg,var(--brand),var(--brand-2));
+    width:0%; transition: width var(--t);
+  }
+
+  .list{display:flex; flex-direction:column; gap:10px}
+  .row{
+    display:grid; grid-template-columns: 1fr 140px 120px 120px 110px 120px; gap:10px;
+    align-items:center; padding:12px; border:1px solid var(--outline); border-radius:12px; background: var(--elev);
+  }
+  .row .title{display:flex; align-items:center; gap:12px}
+  .logo-sm{width:34px;height:34px;border-radius:9px; display:grid;place-items:center}
+  .logo-sm[data-merchant^="A"]{background:#232b3a;color:#9ecbff}
+  .logo-sm[data-merchant^="S"]{background:#272235;color:#d3c8ff}
+  .logo-sm[data-merchant^="N"]{background:#233628;color:#98f0c8}
+  .logo-sm[data-merchant^="T"]{background:#2b2620;color:#ffd39f}
+  .pill{
+    font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--outline); background:var(--glass); color:var(--muted)
+  }
+  .kpis{display:flex; gap:10px; align-items:center}
+  .kpis b{color:#fff}
+
+  .switch{
+    --h: 24px; position:relative; width:46px; height:var(--h); border-radius:999px;
+    background:#1a2433; border:1px solid #2a3a55; cursor:pointer; transition:background var(--t);
+  }
+  .switch:before{
+    content:""; position:absolute; top:2px; left:2px; width:var(--h); height:var(--h); border-radius:50%;
+    background:#fff; transition:left var(--t), transform var(--t);
+  }
+  .switch[data-on="true"]{background: linear-gradient(90deg,var(--brand),var(--brand-2))}
+  .switch[data-on="true"]::before{left: calc(100% - var(--h) - 2px)}
+
+  .actions{display:flex; gap:8px; justify-content:flex-end}
+  .ghost{background:transparent;border:1px solid var(--outline);color:#e8eef9}
+  .danger{background:transparent;border:1px solid rgba(255,107,107,.3); color:#ff9a9a}
+
+  /* Modal */
+  dialog{
+    border:none; padding:0; border-radius:18px; width:min(720px, 96vw); background: var(--card); color:var(--ink);
+    box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px var(--outline);
+  }
+  dialog::backdrop{background: rgba(5,9,14,.6); backdrop-filter: blur(6px)}
+  .modal-head{padding:16px 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--outline)}
+  .modal-head h2{margin:0;font-size:18px}
+  .modal-body{padding:16px 18px; display:grid; gap:14px}
+  .modal-grid{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+  @media(max-width:820px){.modal-grid{grid-template-columns:1fr}}
+  .muted{color:var(--muted)}
+  .field{display:grid; gap:6px}
+  .field label{font-size:13px;color:var(--muted)}
+  input[type="range"]{width:100%}
+  .seg{
+    display:flex; border:1px solid var(--outline); border-radius:12px; overflow:hidden;
+  }
+  .seg button{
+    flex:1; padding:10px; background:transparent; border:none; color:var(--ink); cursor:pointer
+  }
+  .seg button[aria-pressed="true"]{
+    background: linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff; font-weight:700
+  }
+  .schedule{
+    border:1px solid var(--outline); border-radius:12px; overflow:hidden
+  }
+  .row2{
+    display:grid; grid-template-columns: 1fr 110px 120px 120px; gap:8px; padding:10px 12px;
+    border-bottom:1px solid var(--outline); align-items:center;
+  }
+  .row2:last-child{border-bottom:none}
+  .badge{font-size:12px; padding:2px 6px; border-radius:999px; border:1px solid var(--outline); color:var(--muted)}
+  .badge.paid{background:rgba(47,211,155,.12); border-color: rgba(47,211,155,.35); color: var(--ok)}
+  .right{display:flex; gap:8px; justify-content:flex-end; align-items:center}
+  .total{font-weight:800; font-size:18px}
+
+  .hint{font-size:12px;color:var(--muted)}
+  .hr{height:1px;background:var(--outline); margin: 2px 0 0}
+
+  .empty{
+    padding:22px;border:1px dashed var(--outline);border-radius:12px;color:var(--muted);text-align:center
+  }
+  .link{color:#cfe0ff;text-decoration:none;border-bottom:1px dotted #cfe0ff}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <h1>Card</h1>
-    <div class="tb-icons">
-      <div class="ib">⚙️</div>
-      <div class="ib">👁️</div>
-      <div class="ib">💬</div>
+  <div class="app">
+    <header>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2c5.5 0 10 4.5 10 10v2.4c0 1.8-1.4 3.2-3.2 3.2H16a2 2 0 0 1-2-2v-1.5a2.5 2.5 0 1 0-4.9 0V19a3 3 0 0 1-3 3H5.2A3.2 3.2 0 0 1 2 18.8V12C2 6.5 6.5 2 12 2z"/></svg>
+      </div>
+      <div class="title">
+        <h1>Buy Now, Pay Later — Dashboard</h1>
+        <p>Track plans, make payments, and manage autopay.</p>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="chip">Available to spend: <b id="availChip">$—</b></div>
+      <div class="chip">Total due next 30 days: <b id="dueChip">$—</b></div>
+      <div class="chip">Active plans: <b id="plansChip">—</b></div>
+      <div class="spacer"></div>
+      <button class="btn secondary" id="resetDemo">Reset demo</button>
+      <button class="btn" id="newPlan">New plan</button>
     </div>
-  </div>
 
-  <div class="views">
-    <div class="viewWrap" id="viewWrap">
-      <!-- 1) CARD VIEW -->
-      <section class="view">
-        <div class="card">
-          <!-- switcher -->
-          <div class="switch">
-            <div class="thumb" id="thumb"></div>
-            <div class="switchInner">
-              <button class="sw-btn" id="btnOver">Pay over time</button>
-              <button class="sw-btn" id="btnFull" style="font-weight:900;color:#0a0f3b">Pay in full</button>
-            </div>
-          </div>
-
-          <!-- content pages -->
-          <div class="pages" id="payPages" style="margin-top:14px">
-            <!-- Pay over time -->
-            <div class="page">
-              <div class="power">
-                <div class="chip">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h7l-1 8 10-12h-7z"/></svg>
-                  Purchasing power
-                </div>
-              </div>
-              <div class="big" id="pp">$11,910</div>
-              <button class="cta" id="planBtn">Plan a purchase</button>
-            </div>
-
-            <!-- Pay in full -->
-            <div class="page">
-              <div class="center">
-                <a class="bankTag linkish" id="bankLink" href="https://notshloakrblx.github.io/savings-checking-dashboard/" target="_blank" rel="noopener">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#0a0f3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 10h18L12 4 3 10zM4 10v8M20 10v8M2 18h20"/></svg>
-                  Sapphire Checking
-                </a>
-              </div>
-              <div class="big">$298.04</div>
-              <p class="subtle">Available balance</p>
-              <a class="outline center" href="https://notshloakrblx.github.io/savings-checking-dashboard/" target="_blank" rel="noopener">Go</a>
-            </div>
-          </div>
-        </div>
+    <div class="grid">
+      <section class="card col-4">
+        <h3>Present Balance</h3>
+        <div class="big"><span id="presentBalance">$0.00</span> <span class="trend ok" id="balanceTrend">on track</span></div>
+        <div class="sub">Total remaining across all active plans</div>
+        <div style="height:10px"></div>
+        <div class="progress" aria-label="Paydown progress"><span id="paydownBar" style="width:0%"></span></div>
+        <div class="sub" id="paydownSub">0% paid</div>
       </section>
 
-      <!-- 2) MANAGE VIEW (original content restored) -->
-      <section class="view manage">
-        <h2 style="margin:14px 12px 0">Manage</h2>
-        <div class="seg"><button>Active</button></div>
-        <div class="empty">
-          <h3>Your purchases are paid off</h3>
-          <p>Explore exclusive deals and get flexible payment plans at top stores.</p>
-        </div>
+      <section class="card col-4">
+        <h3>Upcoming Payment</h3>
+        <div class="big"><span id="nextAmount">$0.00</span></div>
+        <div class="sub">Due <span id="nextDate">—</span></div>
+        <div style="height:10px"></div>
+        <button class="btn" id="payNextBtn">Pay next due</button>
       </section>
 
-      <!-- 3) PLAN PAGE (full page) -->
-      <section class="view" id="planView">
-        <div class="planTop">
-          <button class="back" id="planBack">‹</button>
-          <div class="title">Plan a purchase</div>
-        </div>
-
-        <div class="planPages" id="planPages">
-          <!-- Q1 -->
-          <div class="planPage">
-            <div class="pad">
-              <div class="ask">Merchant</div>
-              <input id="merchant" class="inp" placeholder="e.g., Amazon"/>
-            </div>
-            <div class="bar"><button class="barCta" id="toQ2">Continue</button></div>
-          </div>
-
-          <!-- Q2 -->
-          <div class="planPage">
-            <div class="pad">
-              <div class="ask">Purchase amount</div>
-              <input id="amount" class="inp" inputmode="decimal" pattern="[0-9]*" placeholder="0.00"/>
-              <p class="helper">Numbers only. You’ll see plans next.</p>
-            </div>
-            <div class="bar"><button class="barCta" id="toLoading">Continue</button></div>
-          </div>
-
-          <!-- Loading -->
-          <div class="planPage">
-            <div class="pad" style="display:flex;align-items:center;gap:14px">
-              <div>
-                <div class="title" style="margin:0 0 6px" id="loadingTitle">Plans for …</div>
-                <div class="helper">Finding plans for you</div>
-              </div>
-              <div class="spinner" aria-hidden="true"></div>
-            </div>
-          </div>
-
-          <!-- Plans list -->
-          <div class="planPage">
-            <div class="pad"><div class="ask" style="margin-top:4px">Plans</div></div>
-            <div class="plans" id="plansWrap"></div>
-            <p class="based" id="basedNote"></p>
-          </div>
-        </div>
+      <section class="card col-4">
+        <h3>Rewards & Boosts</h3>
+        <div class="big"><span id="rewards">$0.00</span> <span class="trend warn">beta</span></div>
+        <div class="sub">Earned from on-time payments (demo)</div>
+        <div style="height:10px"></div>
+        <div class="hint">Tip: Paying early improves your utilization and may raise your limit.</div>
       </section>
     </div>
+
+    <section class="card" style="margin-top:14px">
+      <h3>Active Plans</h3>
+      <div id="plansList" class="list"></div>
+      <div id="emptyState" class="empty" hidden>No active plans. Click <b>New plan</b> to add a demo loan.</div>
+    </section>
   </div>
 
-  <!-- bottom tabs -->
-  <div class="tabs">
-    <a class="tab active" id="tabCard" href="#">Card</a>
-    <a class="tab" id="tabManage" href="#">Manage</a>
-  </div>
-</div>
-
-<!-- ACTIVATE SHEET (unchanged) -->
-<div class="sheet fullSheet" id="activateSheet">
-  <div class="dim" id="actDim"></div>
-  <div class="panel">
-    <div class="head">
-      <button class="x" id="actClose">×</button>
-      <div class="title">Review and activate your plan</div>
+  <dialog id="planModal">
+    <div class="modal-head">
+      <div class="logo-sm" id="pmLogo" data-merchant="A"><svg width="18" height="18" viewBox="0 0 24 24" fill="#cfe0ff"><circle cx="12" cy="12" r="8"/></svg></div>
+      <div style="flex:1">
+        <h2 id="pmTitle">Manage Plan</h2>
+        <div class="muted" id="pmSubtitle">—</div>
+      </div>
+      <button class="btn secondary" id="closeModal" style="margin-left:auto">Close</button>
     </div>
-    <div class="detailWrap" id="actContent"></div>
-  </div>
-</div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <section class="card">
+          <h3>Make a Payment</h3>
+          <div class="field">
+            <label>Amount</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="range" min="0" max="0" value="0" id="amountRange" />
+              <input type="number" id="amountInput" step="0.01" min="0" style="width:130px;padding:8px;border-radius:8px;border:1px solid var(--outline);background:#0f1520;color:#fff" />
+            </div>
+            <div class="hint">Drag the slider or enter a custom amount.</div>
+          </div>
+
+          <div class="field">
+            <label>Speed</label>
+            <div class="seg" role="tablist" aria-label="Payment speed">
+              <button type="button" id="speedStandard" aria-pressed="true">1–2 business days (free)</button>
+              <button type="button" id="speedInstant" aria-pressed="false">Instant (fee)</button>
+            </div>
+            <div class="hint" id="arrivalHint">Arrives by <span id="arrivalEta">—</span></div>
+          </div>
+
+          <div class="field">
+            <label>Summary</label>
+            <div class="row2" style="border:none;padding:0">
+              <div>Payment</div><div></div><div></div><div id="sumPayment" class="right">$0.00</div>
+            </div>
+            <div class="row2" style="border:none;padding:0">
+              <div>Instant fee</div><div></div><div></div><div id="sumFee" class="right">$0.00</div>
+            </div>
+            <div class="hr"></div>
+            <div class="row2" style="border:none;padding:8px 0 0">
+              <div class="total">Total today</div><div></div><div></div><div id="sumTotal" class="right total">$0.00</div>
+            </div>
+          </div>
+
+          <div class="right">
+            <button class="btn secondary" id="payMin">Pay minimum</button>
+            <button class="btn" id="confirmPay">Confirm & Pay</button>
+          </div>
+          <div class="hint">This is a demo—no real money moves.</div>
+        </section>
+
+        <section class="card">
+          <h3>Schedule & Settings</h3>
+          <div class="row2" style="border:none">
+            <div>Autopay</div>
+            <div></div>
+            <div></div>
+            <div class="right">
+              <div id="pmAuto" class="switch" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+          </div>
+          <div class="row2" style="border:none">
+            <div>Remaining balance</div><div></div><div></div>
+            <div class="right" id="pmRemaining">$0.00</div>
+          </div>
+          <div class="row2" style="border:none">
+            <div>Next due</div><div></div><div></div>
+            <div class="right" id="pmNextDue">—</div>
+          </div>
+
+          <div style="height:8px"></div>
+          <div class="schedule" id="pmSchedule">
+            <!-- Filled dynamically -->
+          </div>
+        </section>
+      </div>
+    </div>
+  </dialog>
 
 <script>
-(()=>{
+(function(){
+  const fmt = new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'});
+  const fmtShortDate = (d)=> new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+  const addDays = (d, n)=> { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+  const cap = (v,min,max)=> Math.max(min, Math.min(max, v));
 
-  /* -------- App-level paging (3 views): Card / Manage / Plan -------- */
-  const viewWrap = document.getElementById('viewWrap');
-  const tabCard   = document.getElementById('tabCard');
-  const tabManage = document.getElementById('tabManage');
-  function goto(idx){ viewWrap.style.transform = `translateX(${-33.3333*idx}%)`; }
-  tabCard.addEventListener('click', (e)=>{e.preventDefault(); goto(0); tabCard.classList.add('active'); tabManage.classList.remove('active');});
-  tabManage.addEventListener('click', (e)=>{e.preventDefault(); goto(1); tabManage.classList.add('active'); tabCard.classList.remove('active');});
+  // ---- Data ----
+  const LS_KEY = 'bnpl_demo_state_v1';
+  let state = loadState() || seedPlans();
 
-  /* -------- Pay over time / Pay in full switcher -------- */
-  const pages = document.getElementById('payPages');
-  const btnOver = document.getElementById('btnOver');
-  const btnFull = document.getElementById('btnFull');
-  const thumb = document.getElementById('thumb');
-  function setMode(m){ pages.style.transform = (m==='over')?'translateX(0%)':'translateX(-50%)'; thumb.classList.toggle('r', m!=='over'); }
-  btnOver.addEventListener('click', ()=>setMode('over'));
-  btnFull.addEventListener('click', ()=>setMode('full'));
+  function seedPlans(){
+    const today = new Date();
+    const mkPlan = (id, merchant, total, installments, firstDueDays=7)=>{
+      const per = +(total/installments).toFixed(2);
+      const schedule = Array.from({length:installments}, (_,i)=>({
+        idx:i+1,
+        amount: i===installments-1 ? +(total - per*(installments-1)).toFixed(2) : per,
+        due: addDays(today, firstDueDays + 14*i).toISOString(),
+        paid: false,
+        paidAt: null
+      }));
+      return {
+        id, merchant, created: today.toISOString(),
+        total, remaining: total, installments, schedule,
+        autopay: id%2===0, // alternate
+      };
+    };
+    const plans = [
+      mkPlan(1,'Amazon', 324.97, 4, 5),
+      mkPlan(2,'Target', 128.40, 4, 3),
+      mkPlan(3,'Nike',   219.00, 3, 9),
+      mkPlan(4,'Spotify', 59.97, 3, 6),
+    ];
+    return { plans, limit: 1500, reserved: 0, rewards: 8.25 };
+  }
 
-  /* -------- Plan page flow (Q1 → Q2 → Loading → Plans) -------- */
-  const planBtn    = document.getElementById('planBtn');
-  const planBack   = document.getElementById('planBack');
-  const planPages  = document.getElementById('planPages');
-  const toQ2       = document.getElementById('toQ2');
-  const toLoading  = document.getElementById('toLoading');
-  const merchantEl = document.getElementById('merchant');
-  const amountEl   = document.getElementById('amount');
-  const loadingTitle = document.getElementById('loadingTitle');
+  function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  function loadState(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||''); }catch{ return null; } }
 
-  const current = {merchant:'', amount:0};
+  // ---- Derived metrics ----
+  function compute(){
+    const presentBalance = state.plans.reduce((a,p)=> a + p.remaining, 0);
+    const paid = state.plans.reduce((a,p)=> a + (p.total - p.remaining), 0);
+    const total = state.plans.reduce((a,p)=> a + p.total, 0);
+    const pct = total? Math.round((paid/total)*100):0;
 
-  function planGoto(step){ planPages.style.transform = `translateX(${-25*step}%)`; }
-  planBtn.addEventListener('click', ()=>{ goto(2); planGoto(0); merchantEl.value=''; amountEl.value=''; setTimeout(()=>merchantEl.focus(), 200); });
-  planBack.addEventListener('click', ()=>{ goto(0); });
+    const upcoming = [];
+    state.plans.forEach(p=>{
+      const next = p.schedule.find(s=>!s.paid);
+      if(next) upcoming.push({plan:p, ...next});
+    });
+    upcoming.sort((a,b)=> new Date(a.due)-new Date(b.due));
+    const nextDue = upcoming[0];
+    const next30 = upcoming.filter(x=> (new Date(x.due)-new Date())/86400000 <= 30)
+                           .reduce((a,x)=> a + x.amount, 0);
 
-  toQ2.addEventListener('click', ()=>{ planGoto(1); setTimeout(()=>amountEl.focus(), 220); });
+    return {presentBalance, pct, nextDue, next30};
+  }
 
-  toLoading.addEventListener('click', ()=>{
-    const m = (merchantEl.value||'').trim() || 'Store';
-    const raw = (amountEl.value||'0').replace(/[^\d.]/g,'');
-    const amt = Math.max(0, parseFloat(raw||'0'));
-    if(!isFinite(amt) || amt<=0){ amountEl.focus(); return; }
-    current.merchant = m;
-    current.amount = Math.round(amt*100)/100;
-    loadingTitle.textContent = `Plans for ${m}`;
-    planGoto(2);
-    setTimeout(()=>{ renderPlans(); planGoto(3); }, 3000); // 3s loader
-  });
+  // ---- Render ----
+  const $ = (q, el=document)=> el.querySelector(q);
+  const $$ = (q, el=document)=> [...el.querySelectorAll(q)];
 
-  /* -------- Build plans + render into plan page -------- */
-  const plansWrap = document.getElementById('plansWrap');
-  const basedNote = document.getElementById('basedNote');
+  const els = {
+    availChip: $('#availChip'),
+    dueChip: $('#dueChip'),
+    plansChip: $('#plansChip'),
+    presentBalance: $('#presentBalance'),
+    paydownBar: $('#paydownBar'),
+    paydownSub: $('#paydownSub'),
+    nextAmount: $('#nextAmount'),
+    nextDate: $('#nextDate'),
+    rewards: $('#rewards'),
+    payNextBtn: $('#payNextBtn'),
+    plansList: $('#plansList'),
+    emptyState: $('#emptyState'),
+    resetDemo: $('#resetDemo'),
+    newPlan: $('#newPlan'),
+    balanceTrend: $('#balanceTrend'),
+  };
 
-  function fmt(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD'}); }
+  function render(){
+    const {presentBalance, pct, nextDue, next30} = compute();
+    els.presentBalance.textContent = fmt.format(presentBalance);
+    els.paydownBar.style.width = pct + '%';
+    els.paydownSub.textContent = pct + '% paid';
+    els.rewards.textContent = fmt.format(state.rewards||0);
+    els.availChip.textContent = fmt.format(cap(state.limit - presentBalance - (state.reserved||0),0,1e9));
+    els.dueChip.textContent = fmt.format(next30);
+    els.plansChip.textContent = state.plans.length;
 
-  function makePlans(amt){
-    const items=[];
-    const p4 = +(amt/4).toFixed(2);
-    items.push({ id:'pay4', name:'Bi-weekly (Pay in 4)', apr:0, payments:4, per:p4, total:+(p4*4).toFixed(2), downpayment:p4, tag:'0% APR' });
-    const total6 = +(amt*1.20).toFixed(2);
-    const per6   = +(total6/6).toFixed(2);
-    items.push({ id:'m6', name:'6 months', apr:20, payments:6, per:per6, total:total6, downpayment:per6, tag:'20% APR' });
-    if(amt>=100){
-      const total12 = +(amt*1.25).toFixed(2);
-      const per12   = +(total12/12).toFixed(2);
-      items.push({ id:'m12', name:'12 months', apr:25, payments:12, per:per12, total:total12, downpayment:per12, tag:'25% APR' });
+    if(nextDue){
+      els.nextAmount.textContent = fmt.format(nextDue.amount);
+      els.nextDate.textContent = fmtShortDate(nextDue.due);
+      els.payNextBtn.disabled = false;
+      els.payNextBtn.onclick = ()=> openPlanModal(nextDue.plan.id, nextDue.amount);
+    }else{
+      els.nextAmount.textContent = '$0.00';
+      els.nextDate.textContent = '—';
+      els.payNextBtn.disabled = true;
     }
-    return items;
+
+    // trend
+    if(pct >= 60){ els.balanceTrend.className='trend ok'; els.balanceTrend.textContent='on track'; }
+    else if(pct >= 25){ els.balanceTrend.className='trend warn'; els.balanceTrend.textContent='keep going'; }
+    else { els.balanceTrend.className='trend danger'; els.balanceTrend.textContent='falling behind'; }
+
+    renderPlans();
   }
 
   function renderPlans(){
-    const list = makePlans(current.amount);
-    plansWrap.innerHTML = list.map(p=>`
-      <div class="plan">
-        <div class="hdr">
-          <div style="font-weight:900">${p.name}</div>
-          <div class="pill">${p.tag}</div>
-        </div>
-        <div class="price">${fmt(p.per)} <span class="small">${p.id==='pay4'?'x 4':'/ mo'}</span></div>
-        <div class="small">${p.id==='pay4'?'Every 2 weeks':'6 payments'.replace('6', p.payments)} • Total ${fmt(p.total)}</div>
-        ${p.id==='pay4'?`<div style="margin-top:8px;font-weight:900">Downpayment today ${fmt(p.downpayment)}</div>`:''}
-        <button class="select" data-plan='${JSON.stringify(p)}'>Select plan</button>
-      </div>
-    `).join('');
-    basedNote.textContent = `Based on a purchase of ${fmt(current.amount)} at ${current.merchant}.`;
+    const L = state.plans;
+    els.plansList.innerHTML = '';
+    els.emptyState.hidden = L.length>0;
+    L.forEach(p=>{
+      const next = p.schedule.find(s=>!s.paid);
+      const paid = p.total - p.remaining;
+      const pct = p.total? Math.round(paid/p.total*100):0;
 
-    plansWrap.querySelectorAll('.select').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const p = JSON.parse(btn.getAttribute('data-plan'));
-        openActivate(p);
-      });
+      const row = document.createElement('div');
+      row.className='row';
+
+      const t = document.createElement('div');
+      t.className='title';
+      const logo = document.createElement('div');
+      logo.className='logo-sm'; logo.dataset.merchant = p.merchant[0].toUpperCase();
+      logo.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#cfe0ff"><circle cx="12" cy="12" r="8"/></svg>`;
+      const name = document.createElement('div');
+      name.innerHTML = `<div style="font-weight:700">${p.merchant}</div>
+                        <div class="sub">Plan ${p.installments} · ${fmt.format(p.total)}</div>`;
+      t.append(logo, name);
+
+      const prog = document.createElement('div');
+      prog.innerHTML = `<div class="progress" aria-label="Installment progress"><span style="width:${pct}%"></span></div>
+                        <div class="sub">${Math.round(p.total - p.remaining) ? fmt.format(paid) : '$0.00'} paid • ${pct}%</div>`;
+
+      const nextDue = document.createElement('div');
+      nextDue.innerHTML = next ? `<span class="pill">Due ${fmtShortDate(next.due)}</span>` : `<span class="pill">Paid off</span>`;
+
+      const remaining = document.createElement('div');
+      remaining.innerHTML = `<div style="font-weight:700">${fmt.format(p.remaining)}</div>
+                             <div class="sub">Remaining</div>`;
+
+      const autop = document.createElement('div');
+      autop.style.display='flex'; autop.style.alignItems='center'; autop.style.gap='8px';
+      const label = document.createElement('div'); label.className='sub'; label.textContent='Autopay';
+      const sw = document.createElement('div'); sw.className='switch'; sw.dataset.on = String(!!p.autopay);
+      sw.setAttribute('role','switch'); sw.setAttribute('aria-checked', String(!!p.autopay));
+      sw.onclick = ()=>{ p.autopay = !p.autopay; sw.dataset.on = String(!!p.autopay); sw.setAttribute('aria-checked', String(!!p.autopay)); saveState(); };
+      autop.append(label, sw);
+
+      const actions = document.createElement('div'); actions.className='actions';
+      const payBtn = document.createElement('button'); payBtn.className='btn ghost'; payBtn.textContent='Pay';
+      payBtn.onclick = ()=> openPlanModal(p.id, next? next.amount : 0);
+      const manageBtn = document.createElement('button'); manageBtn.className='btn'; manageBtn.textContent='Manage';
+      manageBtn.onclick = ()=> openPlanModal(p.id);
+      actions.append(payBtn, manageBtn);
+
+      row.append(t, prog, nextDue, remaining, autop, actions);
+      els.plansList.append(row);
     });
   }
 
-  /* -------- Activate sheet (unchanged) -------- */
-  const activateSheet = document.getElementById('activateSheet');
-  const actContent = document.getElementById('actContent');
-  const actClose = document.getElementById('actClose');
-  const actDim = document.getElementById('actDim');
-  actClose.addEventListener('click', ()=>activateSheet.classList.remove('active'));
-  actDim.addEventListener('click', ()=>activateSheet.classList.remove('active'));
+  // ---- Modal / Pay flow ----
+  const dlg = $('#planModal');
+  const pm = {
+    title: $('#pmTitle'), subtitle: $('#pmSubtitle'), logo: $('#pmLogo'),
+    rem: $('#pmRemaining'), next: $('#pmNextDue'), sched: $('#pmSchedule'),
+    auto: $('#pmAuto'),
+    range: $('#amountRange'), amount: $('#amountInput'),
+    speedStd: $('#speedStandard'), speedInst: $('#speedInstant'),
+    arrival: $('#arrivalEta'),
+    sumPay: $('#sumPayment'), sumFee: $('#sumFee'), sumTotal: $('#sumTotal'),
+    payMin: $('#payMin'), confirm: $('#confirmPay'), close: $('#closeModal'),
+  };
+  let modalPlan = null;
+  let speed = 'standard';
 
-  function openActivate(plan){
-    const interestAmt = +(plan.total - current.amount).toFixed(2);
-    const aprStr = (plan.apr||0).toFixed(2);
-    const cadenceLine =
-      plan.id==='pay4'
-        ? `${fmt(plan.per)} every 2 weeks for 6 weeks`
-        : `${fmt(plan.per)} every month for ${plan.payments} months`;
-    const dueTodayLabel = (plan.id==='pay4'?'Downpayment today':'Due today');
-    const dueToday = plan.downpayment;
+  function openPlanModal(id, suggestAmount=0){
+    modalPlan = state.plans.find(p=>p.id===id);
+    if(!modalPlan) return;
 
-    actContent.innerHTML = `
-      <div class="box">
-        <div class="summaryTitle">${cadenceLine}</div>
-        <div class="small">${plan.payments} payments</div>
-        <div class="dates">
-          <div class="dot" aria-hidden="true"></div>
-          <div class="dot" aria-hidden="true"></div>
-          <div class="dot" aria-hidden="true"></div>
-          ${plan.payments>3?'<div class="dot" aria-hidden="true"></div>':''}
-        </div>
-        <div class="helper" style="margin-top:8px">These due dates are close estimates.</div>
-      </div>
+    pm.title.textContent = `${modalPlan.merchant} — Plan`;
+    pm.subtitle.textContent = `${modalPlan.installments} installments • ${fmt.format(modalPlan.total)} total`;
+    pm.logo.dataset.merchant = modalPlan.merchant[0].toUpperCase();
+    pm.rem.textContent = fmt.format(modalPlan.remaining);
+    const next = modalPlan.schedule.find(s=>!s.paid);
+    pm.next.textContent = next? `${fmtShortDate(next.due)} • ${fmt.format(next.amount)}` : 'Paid off';
 
-      <div class="box">
-        <h4>${dueTodayLabel}<span style="float:right">${fmt(dueToday)}</span></h4>
-        <div class="line"><div>Purchase amount</div><div>${fmt(current.amount)}</div></div>
-        <div class="line"><div>Interest (${aprStr}% APR)</div><div>${fmt(interestAmt)}</div></div>
-        <div class="line" style="font-weight:900"><div>Total of payments</div><div>${fmt(plan.total)}</div></div>
-      </div>
+    // schedule
+    pm.sched.innerHTML = '';
+    modalPlan.schedule.forEach(s=>{
+      const row = document.createElement('div'); row.className='row2';
+      const status = s.paid ? '<span class="badge paid">Paid</span>' : '<span class="badge">Due</span>';
+      row.innerHTML = `
+        <div>#${s.idx} • ${fmtShortDate(s.due)}</div>
+        <div>${status}</div>
+        <div>${s.paidAt? fmtShortDate(s.paidAt) : '—'}</div>
+        <div class="right"><b>${fmt.format(s.amount)}</b></div>
+      `;
+      pm.sched.append(row);
+    });
 
-      <div class="box">
-        <h4>Activate, then swipe</h4>
-        <div class="helper">Your plan won't start until you check out with your Affirm Card.</div>
-      </div>
+    // autopay
+    pm.auto.dataset.on = String(!!modalPlan.autopay);
+    pm.auto.setAttribute('aria-checked', String(!!modalPlan.autopay));
+    pm.auto.onclick = ()=>{ modalPlan.autopay = !modalPlan.autopay; pm.auto.dataset.on = String(!!modalPlan.autopay); pm.auto.setAttribute('aria-checked', String(!!modalPlan.autopay)); saveState(); };
 
-      <label class="agree">
-        <input id="agreeCk" type="checkbox"/>
-        <span>By continuing, you authorize the payment due today and agree to the
-          <a class="linkish" href="#" onclick="event.preventDefault()">One-Time Payment Authorization</a>
-          and the <a class="linkish" href="#" onclick="event.preventDefault()">Autopay Authorization</a>.
-          I have reviewed and agree to the
-          <a class="linkish" href="#" onclick="event.preventDefault()">Payment Agreement &amp; Disclosures</a>
-          and ${current.merchant} refund policy.
-        </span>
-      </label>
+    // amount controls
+    const max = +modalPlan.remaining.toFixed(2);
+    pm.range.max = String(max);
+    pm.range.value = suggestAmount ? String(cap(suggestAmount,0,max)) : String(Math.min((modalPlan.schedule.find(s=>!s.paid)?.amount)||0, max));
+    pm.amount.value = (+pm.range.value || 0).toFixed(2);
 
-      <button class="bigbtn" id="activateBtn" disabled>Activate my plan</button>
-    `;
-    activateSheet.classList.add('active');
-    const ck = actContent.querySelector('#agreeCk');
-    const ab = actContent.querySelector('#activateBtn');
-    ck.addEventListener('change', ()=>{ ab.disabled = !ck.checked; });
+    speed = 'standard';
+    pm.speedStd.setAttribute('aria-pressed','true');
+    pm.speedInst.setAttribute('aria-pressed','false');
+
+    updateSummary();
+    dlg.showModal();
   }
 
+  function updateSummary(){
+    const val = cap(parseFloat(pm.amount.value||'0'), 0, parseFloat(pm.range.max||'0'));
+    pm.amount.value = isFinite(val) ? val.toFixed(2) : '0.00';
+    pm.range.value = String(val);
+
+    const fee = speed==='instant' ? +(Math.min(val*0.015, 5).toFixed(2)) : 0;
+    const total = +(val + fee).toFixed(2);
+    pm.sumPay.textContent = fmt.format(val);
+    pm.sumFee.textContent = fmt.format(fee);
+    pm.sumTotal.textContent = fmt.format(total);
+
+    // arrival ETA
+    const base = new Date();
+    let eta;
+    if(speed==='instant'){
+      eta = new Date(base.getTime()+ 5*60*1000); // 5 minutes (demo)
+      pm.arrival.textContent = eta.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    }else{
+      // naïve add 2 business days
+      let d = new Date(base);
+      let added = 0;
+      while(added<2){
+        d.setDate(d.getDate()+1);
+        const day = d.getDay();
+        if(day!==0 && day!==6) added++;
+      }
+      pm.arrival.textContent = fmtShortDate(d);
+    }
+  }
+
+  // Handlers
+  pm.range.addEventListener('input', ()=>{ pm.amount.value = (+pm.range.value).toFixed(2); updateSummary(); });
+  pm.amount.addEventListener('input', updateSummary);
+  pm.speedStd.addEventListener('click', ()=>{ speed='standard'; pm.speedStd.setAttribute('aria-pressed','true'); pm.speedInst.setAttribute('aria-pressed','false'); updateSummary(); });
+  pm.speedInst.addEventListener('click', ()=>{ speed='instant'; pm.speedStd.setAttribute('aria-pressed','false'); pm.speedInst.setAttribute('aria-pressed','true'); updateSummary(); });
+  pm.payMin.addEventListener('click', ()=>{
+    const next = modalPlan.schedule.find(s=>!s.paid);
+    const target = next ? next.amount : 0;
+    pm.range.value = String(target);
+    pm.amount.value = target.toFixed(2);
+    updateSummary();
+  });
+  pm.confirm.addEventListener('click', ()=>{
+    const val = parseFloat(pm.amount.value||'0');
+    if(!modalPlan || !val || val<=0) return;
+
+    // apply to schedule oldest-first
+    let remaining = val;
+    for(const s of modalPlan.schedule){
+      if(remaining<=0) break;
+      if(s.paid) continue;
+      const pay = Math.min(remaining, s.amount);
+      s.amount = +(s.amount - pay).toFixed(2);
+      remaining = +(remaining - pay).toFixed(2);
+      if(s.amount <= 0.009){ // treat as paid
+        s.paid = true;
+        s.paidAt = new Date().toISOString();
+        s.amount = 0;
+      }
+    }
+    modalPlan.remaining = modalPlan.schedule.filter(s=>!s.paid).reduce((a,s)=> a + s.amount, 0);
+
+    // tiny rewards demo
+    state.rewards = +( (state.rewards || 0) + Math.min(val*0.01, 1.50) ).toFixed(2);
+
+    saveState();
+    render();
+    openPlanModal(modalPlan.id); // re-render inside
+  });
+  pm.close.addEventListener('click', ()=> dlg.close());
+  dlg.addEventListener('click', (e)=>{ // click outside to close
+    const rect = dlg.getBoundingClientRect();
+    if(e.clientY < rect.top || e.clientY > rect.bottom || e.clientX < rect.left || e.clientX > rect.right){
+      dlg.close();
+    }
+  });
+
+  // toolbar
+  els.resetDemo.addEventListener('click', ()=>{
+    if(confirm('Reset demo data?')){ state = seedPlans(); saveState(); render(); }
+  });
+  els.newPlan.addEventListener('click', ()=>{
+    const merchant = prompt('Merchant name? (e.g., Apple)') || 'Sample Store';
+    const total = parseFloat(prompt('Total purchase amount? (e.g., 199.99)')||'199.99');
+    const n = parseInt(prompt('Number of installments? (e.g., 4)')||'4',10);
+    if(!isFinite(total)||!isFinite(n)|| total<=0 || n<=0) return alert('Invalid values.');
+    const nextId = (state.plans.reduce((m,p)=> Math.max(m,p.id),0) + 1) || 1;
+    // build a plan like seed
+    const today = new Date();
+    const per = +(total/n).toFixed(2);
+    const schedule = Array.from({length:n}, (_,i)=>({
+      idx:i+1,
+      amount: i===n-1 ? +(total - per*(n-1)).toFixed(2) : per,
+      due: addDays(today, 7 + 14*i).toISOString(),
+      paid: false, paidAt: null
+    }));
+    state.plans.push({ id:nextId, merchant, created: today.toISOString(), total, remaining: total, installments:n, schedule, autopay:true });
+    saveState(); render();
+  });
+
+  // quick pay next
+  els.payNextBtn.addEventListener('click', ()=>{
+    const up = compute().nextDue;
+    if(up) openPlanModal(up.plan.id, up.amount);
+  });
+
+  render();
 })();
 </script>
 </body>
