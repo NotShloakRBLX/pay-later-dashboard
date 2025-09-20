@@ -49,21 +49,8 @@
   .tit h1{margin:0;font-size:18px; letter-spacing:.2px}
   .tit p{margin:2px 0 0; color:var(--muted); font-size:12px}
 
-  /* Chips scroller */
-  .chips{
-    display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
-    padding: 10px 14px; scroll-snap-type: x proximity;
-  }
-  .chip{
-    scroll-snap-align: start;
-    border:1px solid var(--outline); border-radius:999px; padding:10px 12px;
-    background:var(--glass); backdrop-filter:saturate(140%) blur(6px);
-    font-size:13px; white-space:nowrap;
-  }
-  .chip b{color:#fff}
-
-  /* Cards (single column mobile) */
-  .wrap{padding: 0 14px 14px; display:grid; gap:12px}
+  /* Content */
+  .wrap{padding: 10px 14px 14px; display:grid; gap:12px}
   .card{
     background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
     border:1px solid var(--outline); border-radius: var(--radius); padding:14px;
@@ -71,30 +58,28 @@
   .card h3{margin:0 0 10px; font-size:12px; color:var(--muted); letter-spacing:.3px; text-transform:uppercase}
   .big{display:flex; align-items:baseline; gap:8px; font-size:28px; font-weight:800}
   .sub{color:var(--muted); font-size:13px}
-  .trend{font-size:11px;border-radius:999px;padding:4px 8px;font-weight:700;border:1px solid var(--outline)}
-  .trend.ok{background: rgba(47,211,155,.12); color: var(--ok); border-color: rgba(47,211,155,.35)}
-  .trend.warn{background: rgba(255,204,102,.12); color: var(--warn); border-color: rgba(255,204,102,.35)}
-  .trend.danger{background: rgba(255,107,107,.12); color: var(--danger); border-color: rgba(255,107,107,.35)}
   .progress{height:10px;border-radius:999px;background:#0f1622;border:1px solid #213047; overflow:hidden}
   .progress > span{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand2)); transition:width var(--t)}
+  #paydownSub{margin-top:10px} /* moved slightly lower */
 
-  /* Plans list */
-  .list{display:grid; gap:10px}
+  /* Plans list — less cramped */
+  .list{display:grid; gap:12px}
   .row{
-    display:grid; gap:10px; grid-template-columns: 1fr auto; align-items:center;
-    padding:12px; border:1px solid var(--outline); border-radius:12px; background:var(--surface);
+    display:grid; gap:12px; grid-template-columns: 1fr auto; align-items:center;
+    padding:14px; border:1px solid var(--outline); border-radius:12px; background:var(--surface);
   }
-  .row .left{display:flex; gap:12px; align-items:center; min-width:0}
+  .row .left{display:flex; gap:12px; align-items:flex-start; min-width:0}
   .logo-sm{flex:0 0 auto;width:36px;height:36px;border-radius:9px;display:grid;place-items:center}
   .logo-sm[data-merchant^="A"]{background:#232b3a;color:#9ecbff}
   .logo-sm[data-merchant^="S"]{background:#272235;color:#d3c8ff}
   .logo-sm[data-merchant^="N"]{background:#233628;color:#98f0c8}
   .logo-sm[data-merchant^="T"]{background:#2b2620;color:#ffd39f}
   .title{min-width:0}
-  .title b{display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .title b{display:block; font-size:15px; white-space:normal; word-break:break-word} /* allow wrap */
   .title .sub{margin-top:2px}
   .pill{font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--outline); background:var(--glass); color:var(--muted)}
-  .right{display:flex; gap:8px}
+  .right{display:flex; gap:8px; flex-direction:column; align-items:flex-end} /* stack to avoid cramp */
+
   .btn{
     appearance:none; border:1px solid transparent; border-radius:12px; font-weight:700;
     padding:10px 12px; background:linear-gradient(135deg,var(--brand),var(--brand2));
@@ -104,9 +89,8 @@
   }
   .btn:active{transform:translateY(1px)}
   .ghost{background:transparent; border-color:var(--outline); color:#e8eef9; box-shadow:none}
-  .danger{background:transparent;border-color: rgba(255,107,107,.35); color:#ff9a9a}
 
-  /* Switch (≥44px tap target) */
+  /* Switch */
   .switch{--h:28px; width:52px; height:var(--h); background:#162236; border:1px solid #2b3a55; border-radius:999px; position:relative}
   .switch:before{content:""; position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:#fff; transition:left var(--t)}
   .switch[data-on="true"]{background:linear-gradient(90deg,var(--brand),var(--brand2))}
@@ -129,7 +113,7 @@
   .m-body{overflow:auto; -webkit-overflow-scrolling:touch; padding: 12px 14px 120px; display:grid; gap:12px}
   .field{display:grid; gap:6px}
   .field label{font-size:12px; color:var(--muted)}
-  input, button, select{font-size:16px} /* prevent iOS zoom */
+  input, button, select{font-size:16px}
   input[type="number"], input[type="text"]{width:100%; padding:12px; border-radius:12px; border:1px solid var(--outline); background:#0f1624; color:#fff}
   input[type="range"]{width:100%}
   .seg{display:flex; border:1px solid var(--outline); border-radius:12px; overflow:hidden}
@@ -142,15 +126,15 @@
   .badge.paid{background:rgba(47,211,155,.12); border-color: rgba(47,211,155,.35); color: var(--ok)}
   .total{font-weight:800; font-size:18px}
 
-  /* Bottom action bar */
+  /* Bottom action bar — centered single button */
   .bottom{
     position: fixed; left:0; right:0; bottom:0; z-index:60;
     padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, rgba(11,15,20,0), rgba(11,15,20,.9) 20%, rgba(11,15,20,.98) 60%);
     border-top:1px solid var(--outline);
-    display:flex; gap:8px;
+    display:flex; justify-content:center;
   }
-  .bottom .btn{flex:1}
+  #newPlan{min-width: 240px}
 
   /* Mobile-only blocker on wide screens */
   .desktop-blocker{
@@ -186,17 +170,10 @@
     </div>
   </header>
 
-  <div class="chips" aria-label="Summary">
-    <div class="chip">Available: <b id="availChip">$—</b></div>
-    <div class="chip">Due in 30d: <b id="dueChip">$—</b></div>
-    <div class="chip">Active: <b id="plansChip">—</b></div>
-    <div class="chip">Rewards: <b id="rewardsChip">$—</b></div>
-  </div>
-
   <main class="wrap" id="app">
     <section class="card">
       <h3>Present Balance</h3>
-      <div class="big"><span id="presentBalance">$0.00</span> <span class="trend ok" id="balanceTrend">on track</span></div>
+      <div class="big"><span id="presentBalance">$0.00</span></div>
       <div class="sub">Total remaining across active plans</div>
       <div style="height:10px"></div>
       <div class="progress" aria-label="Paydown progress"><span id="paydownBar"></span></div>
@@ -219,9 +196,8 @@
     </section>
   </main>
 
-  <!-- Bottom action bar -->
+  <!-- Bottom action bar (only New plan) -->
   <div class="bottom">
-    <button class="btn ghost" id="resetDemo">Reset demo</button>
     <button class="btn" id="newPlan">New plan</button>
   </div>
 
@@ -319,11 +295,10 @@
 
   // Elements
   const els = {
-    availChip: $('#availChip'), dueChip: $('#dueChip'), plansChip: $('#plansChip'), rewardsChip: $('#rewardsChip'),
-    presentBalance: $('#presentBalance'), paydownBar: $('#paydownBar'), paydownSub: $('#paydownSub'), balanceTrend: $('#balanceTrend'),
+    presentBalance: $('#presentBalance'), paydownBar: $('#paydownBar'), paydownSub: $('#paydownSub'),
     nextAmount: $('#nextAmount'), nextDate: $('#nextDate'), payNextBtn: $('#payNextBtn'),
     plansList: $('#plansList'), emptyState: $('#emptyState'),
-    resetDemo: $('#resetDemo'), newPlan: $('#newPlan'),
+    newPlan: $('#newPlan'),
   };
 
   function compute(){
@@ -338,25 +313,14 @@
     });
     up.sort((a,b)=> new Date(a.due)-new Date(b.due));
     const nextDue = up[0] || null;
-    const next30 = up.filter(x=> (new Date(x.due)-new Date())/86400000 <= 30)
-                     .reduce((a,x)=> a + x.amount, 0);
-    return {presentBalance, pct, nextDue, next30};
+    return {presentBalance, pct, nextDue};
   }
 
   function render(){
-    const {presentBalance, pct, nextDue, next30} = compute();
+    const {presentBalance, pct, nextDue} = compute();
     els.presentBalance.textContent = fmtMoney.format(presentBalance);
     els.paydownBar.style.width = pct + '%';
     els.paydownSub.textContent = pct + '% paid';
-
-    els.availChip.textContent = fmtMoney.format(Math.max(0, state.limit - presentBalance - (state.reserved||0)));
-    els.dueChip.textContent = fmtMoney.format(next30);
-    els.plansChip.textContent = state.plans.length;
-    els.rewardsChip.textContent = fmtMoney.format(state.rewards||0);
-
-    if(pct >= 60){ setTrend('ok','on track'); }
-    else if(pct >= 25){ setTrend('warn','keep going'); }
-    else { setTrend('danger','falling behind'); }
 
     if(nextDue){
       els.nextAmount.textContent = fmtMoney.format(nextDue.amount);
@@ -370,12 +334,6 @@
     }
 
     renderPlans();
-  }
-
-  function setTrend(type,text){
-    const n = els.balanceTrend;
-    n.className = 'trend ' + type;
-    n.textContent = text;
   }
 
   function renderPlans(){
@@ -404,7 +362,7 @@
       ttl.innerHTML = `<b>${p.merchant}</b>
         <div class="sub">Plan ${p.installments} • ${fmtMoney.format(p.total)}</div>
         <div style="margin-top:8px" class="progress" aria-label="Installment progress"><span style="width:${pct}%"></span></div>
-        <div class="sub" style="margin-top:4px">${fmtMoney.format(Math.max(0, paid))} paid • ${pct}%</div>`;
+        <div class="sub" style="margin-top:6px">${fmtMoney.format(Math.max(0, paid))} paid • ${pct}%</div>`;
 
       left.append(logo, ttl);
 
@@ -473,7 +431,7 @@
     pm.speedInst.setAttribute('aria-pressed','false');
     updateSummary();
 
-    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open'); // iOS 15 fallback
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open');
   }
 
   function updateSummary(){
@@ -529,10 +487,7 @@
   });
   pm.close.addEventListener('click', ()=> { if(dlg.close) dlg.close(); else dlg.removeAttribute('open'); });
 
-  // Tool bar actions
-  els.resetDemo.addEventListener('click', ()=>{
-    if(confirm('Reset demo data?')){ state = seed(); save(); render(); }
-  });
+  // Add new plan
   els.newPlan.addEventListener('click', ()=>{
     const m = prompt('Merchant name? (e.g., Apple)') || 'Sample Store';
     const total = parseFloat(prompt('Total amount? (e.g., 199.99)')||'199.99');
