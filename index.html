@@ -2,270 +2,250 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Buy Now, Pay Later — Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0b0f14" />
+<title>BNPL — Mobile Dashboard</title>
 <style>
   :root{
-    --bg: #0b0f14;
-    --surface: #11161d;
-    --card: #121824;
-    --elev: #0e1420;
-    --ink: #e9eef7;
-    --muted: #a8b3c7;
-    --brand: #5b8cff;
-    --brand-2:#8a7dff;
-    --ok: #2fd39b;
-    --warn:#ffcc66;
-    --danger:#ff6b6b;
-    --outline:#233043;
-    --glass: rgba(255,255,255,.06);
-    --radius: 16px;
-    --t: .22s cubic-bezier(.2,.8,.2,1);
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-    color-scheme: dark;
+    --bg:#0b0f14; --surface:#101722; --card:#121a27; --ink:#e9eef7; --muted:#a8b3c7;
+    --brand:#5b8cff; --brand2:#8a7dff; --ok:#2fd39b; --warn:#ffcc66; --danger:#ff6b6b;
+    --outline:#263247; --glass:rgba(255,255,255,.06); --radius:16px; --t:.22s cubic-bezier(.2,.8,.2,1);
+    color-scheme:dark;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
-    margin:0; font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-    background:
+    margin:0; background:
       radial-gradient(1200px 600px at 80% -20%, rgba(91,140,255,.35), transparent 60%),
       radial-gradient(900px 500px at -10% 10%, rgba(138,125,255,.30), transparent 60%),
       var(--bg);
     color:var(--ink);
+    font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 72px); /* room for bottom bar */
+    overflow-x:hidden;
+    touch-action: manipulation;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important; transition:none!important}
   }
 
-  .app{
-    max-width: 1200px; margin: 24px auto; padding: 0 16px 120px;
-  }
-
+  /* Header */
   header{
-    display:flex; align-items:center; gap:16px; margin: 8px 0 18px;
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(180deg, rgba(11,15,20,.95), rgba(11,15,20,.75));
+    backdrop-filter: blur(10px);
+    padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+    border-bottom: 1px solid var(--outline);
+    display:flex; gap:10px; align-items:center;
   }
   .logo{
-    width:44px;height:44px;border-radius:12px;
-    background: linear-gradient(135deg,var(--brand),var(--brand-2));
-    display:grid;place-items:center; box-shadow: var(--shadow);
+    width:40px;height:40px;border-radius:12px;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    display:grid;place-items:center; flex:0 0 auto;
   }
-  .logo svg{width:24px;height:24px;fill:#fff}
-  .title h1{margin:0;font-size:22px;letter-spacing:.2px}
-  .title p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .logo svg{width:22px;height:22px; fill:#fff}
+  .tit h1{margin:0;font-size:18px; letter-spacing:.2px}
+  .tit p{margin:2px 0 0; color:var(--muted); font-size:12px}
 
-  .toolbar{
-    margin: 16px 0 8px;
-    display:flex;gap:8px;flex-wrap:wrap; align-items:center;
+  /* Chips scroller */
+  .chips{
+    display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
+    padding: 10px 14px; scroll-snap-type: x proximity;
   }
   .chip{
-    padding:10px 12px;border:1px solid var(--outline);
-    border-radius:999px;background:var(--glass);backdrop-filter:saturate(140%) blur(6px);
-    font-size:13px;color:var(--ink);
+    scroll-snap-align: start;
+    border:1px solid var(--outline); border-radius:999px; padding:10px 12px;
+    background:var(--glass); backdrop-filter:saturate(140%) blur(6px);
+    font-size:13px; white-space:nowrap;
   }
   .chip b{color:#fff}
-  .spacer{flex:1}
 
-  .btn{
-    appearance:none;border:1px solid transparent;
-    background:linear-gradient(135deg,var(--brand),var(--brand-2));
-    color:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;
-    transition:transform var(--t), box-shadow var(--t), filter var(--t);
-    box-shadow: 0 6px 18px rgba(91,140,255,.3);
-  }
-  .btn:active{transform:translateY(1px);filter:saturate(1.05)}
-  .btn.secondary{
-    background: transparent;border-color: var(--outline);color:#e9eef7; box-shadow:none;
-  }
-
-  .grid{
-    display:grid; gap:14px;
-    grid-template-columns: repeat(12,1fr);
-  }
-  .col-3{grid-column: span 3}
-  .col-4{grid-column: span 4}
-  .col-5{grid-column: span 5}
-  .col-6{grid-column: span 6}
-  .col-7{grid-column: span 7}
-  .col-8{grid-column: span 8}
-  .col-12{grid-column: span 12}
-
-  @media (max-width: 980px){
-    .col-3,.col-4,.col-5,.col-6,.col-7,.col-8{grid-column: span 12}
-  }
-
+  /* Cards (single column mobile) */
+  .wrap{padding: 0 14px 14px; display:grid; gap:12px}
   .card{
     background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-    border:1px solid var(--outline); border-radius: var(--radius); padding:16px;
-    box-shadow: var(--shadow);
+    border:1px solid var(--outline); border-radius: var(--radius); padding:14px;
   }
-  .card h3{margin:0 0 12px;font-size:14px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
-  .big{
-    display:flex; align-items:baseline; gap:10px; margin:8px 0 6px; font-size:30px; font-weight:800;
-  }
-  .sub{color:var(--muted);font-size:13px}
-  .trend{font-size:12px;border-radius:999px;padding:4px 8px;font-weight:700}
-  .trend.ok{background: rgba(47,211,155,.12); color: var(--ok); border:1px solid rgba(47,211,155,.3)}
-  .trend.warn{background: rgba(255,204,102,.12); color: var(--warn); border:1px solid rgba(255,204,102,.3)}
-  .trend.danger{background: rgba(255,107,107,.12); color: var(--danger); border:1px solid rgba(255,107,107,.3)}
+  .card h3{margin:0 0 10px; font-size:12px; color:var(--muted); letter-spacing:.3px; text-transform:uppercase}
+  .big{display:flex; align-items:baseline; gap:8px; font-size:28px; font-weight:800}
+  .sub{color:var(--muted); font-size:13px}
+  .trend{font-size:11px;border-radius:999px;padding:4px 8px;font-weight:700;border:1px solid var(--outline)}
+  .trend.ok{background: rgba(47,211,155,.12); color: var(--ok); border-color: rgba(47,211,155,.35)}
+  .trend.warn{background: rgba(255,204,102,.12); color: var(--warn); border-color: rgba(255,204,102,.35)}
+  .trend.danger{background: rgba(255,107,107,.12); color: var(--danger); border-color: rgba(255,107,107,.35)}
+  .progress{height:10px;border-radius:999px;background:#0f1622;border:1px solid #213047; overflow:hidden}
+  .progress > span{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand2)); transition:width var(--t)}
 
-  .progress{
-    height:8px;border-radius:999px;background:#111826;border:1px solid #223045; overflow:hidden;
-  }
-  .progress > span{
-    display:block;height:100%; background: linear-gradient(90deg,var(--brand),var(--brand-2));
-    width:0%; transition: width var(--t);
-  }
-
-  .list{display:flex; flex-direction:column; gap:10px}
+  /* Plans list */
+  .list{display:grid; gap:10px}
   .row{
-    display:grid; grid-template-columns: 1fr 140px 120px 120px 110px 120px; gap:10px;
-    align-items:center; padding:12px; border:1px solid var(--outline); border-radius:12px; background: var(--elev);
+    display:grid; gap:10px; grid-template-columns: 1fr auto; align-items:center;
+    padding:12px; border:1px solid var(--outline); border-radius:12px; background:var(--surface);
   }
-  .row .title{display:flex; align-items:center; gap:12px}
-  .logo-sm{width:34px;height:34px;border-radius:9px; display:grid;place-items:center}
+  .row .left{display:flex; gap:12px; align-items:center; min-width:0}
+  .logo-sm{flex:0 0 auto;width:36px;height:36px;border-radius:9px;display:grid;place-items:center}
   .logo-sm[data-merchant^="A"]{background:#232b3a;color:#9ecbff}
   .logo-sm[data-merchant^="S"]{background:#272235;color:#d3c8ff}
   .logo-sm[data-merchant^="N"]{background:#233628;color:#98f0c8}
   .logo-sm[data-merchant^="T"]{background:#2b2620;color:#ffd39f}
-  .pill{
-    font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--outline); background:var(--glass); color:var(--muted)
+  .title{min-width:0}
+  .title b{display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .title .sub{margin-top:2px}
+  .pill{font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--outline); background:var(--glass); color:var(--muted)}
+  .right{display:flex; gap:8px}
+  .btn{
+    appearance:none; border:1px solid transparent; border-radius:12px; font-weight:700;
+    padding:10px 12px; background:linear-gradient(135deg,var(--brand),var(--brand2));
+    color:#fff; box-shadow:0 6px 18px rgba(91,140,255,.3);
+    transition:transform var(--t), filter var(--t);
+    min-width:88px; text-align:center;
   }
-  .kpis{display:flex; gap:10px; align-items:center}
-  .kpis b{color:#fff}
+  .btn:active{transform:translateY(1px)}
+  .ghost{background:transparent; border-color:var(--outline); color:#e8eef9; box-shadow:none}
+  .danger{background:transparent;border-color: rgba(255,107,107,.35); color:#ff9a9a}
 
-  .switch{
-    --h: 24px; position:relative; width:46px; height:var(--h); border-radius:999px;
-    background:#1a2433; border:1px solid #2a3a55; cursor:pointer; transition:background var(--t);
-  }
-  .switch:before{
-    content:""; position:absolute; top:2px; left:2px; width:var(--h); height:var(--h); border-radius:50%;
-    background:#fff; transition:left var(--t), transform var(--t);
-  }
-  .switch[data-on="true"]{background: linear-gradient(90deg,var(--brand),var(--brand-2))}
-  .switch[data-on="true"]::before{left: calc(100% - var(--h) - 2px)}
+  /* Switch (≥44px tap target) */
+  .switch{--h:28px; width:52px; height:var(--h); background:#162236; border:1px solid #2b3a55; border-radius:999px; position:relative}
+  .switch:before{content:""; position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:#fff; transition:left var(--t)}
+  .switch[data-on="true"]{background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .switch[data-on="true"]::before{left: calc(100% - 26px)}
 
-  .actions{display:flex; gap:8px; justify-content:flex-end}
-  .ghost{background:transparent;border:1px solid var(--outline);color:#e8eef9}
-  .danger{background:transparent;border:1px solid rgba(255,107,107,.3); color:#ff9a9a}
-
-  /* Modal */
+  /* Fullscreen mobile modal */
   dialog{
-    border:none; padding:0; border-radius:18px; width:min(720px, 96vw); background: var(--card); color:var(--ink);
-    box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px var(--outline);
+    border:none; padding:0; width:100vw; max-width:100vw; height:100dvh; max-height:100dvh;
+    background:var(--card); color:var(--ink);
   }
   dialog::backdrop{background: rgba(5,9,14,.6); backdrop-filter: blur(6px)}
-  .modal-head{padding:16px 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--outline)}
-  .modal-head h2{margin:0;font-size:18px}
-  .modal-body{padding:16px 18px; display:grid; gap:14px}
-  .modal-grid{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
-  @media(max-width:820px){.modal-grid{grid-template-columns:1fr}}
-  .muted{color:var(--muted)}
+  .sheet{display:grid; grid-template-rows: auto 1fr; height:100%}
+  .m-head{
+    position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(18,26,39,.98), rgba(18,26,39,.9));
+    border-bottom:1px solid var(--outline);
+    padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+    display:flex; gap:10px; align-items:center;
+  }
+  .m-head h2{margin:0; font-size:18px}
+  .m-body{overflow:auto; -webkit-overflow-scrolling:touch; padding: 12px 14px 120px; display:grid; gap:12px}
   .field{display:grid; gap:6px}
-  .field label{font-size:13px;color:var(--muted)}
+  .field label{font-size:12px; color:var(--muted)}
+  input, button, select{font-size:16px} /* prevent iOS zoom */
+  input[type="number"], input[type="text"]{width:100%; padding:12px; border-radius:12px; border:1px solid var(--outline); background:#0f1624; color:#fff}
   input[type="range"]{width:100%}
-  .seg{
-    display:flex; border:1px solid var(--outline); border-radius:12px; overflow:hidden;
-  }
-  .seg button{
-    flex:1; padding:10px; background:transparent; border:none; color:var(--ink); cursor:pointer
-  }
-  .seg button[aria-pressed="true"]{
-    background: linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff; font-weight:700
-  }
-  .schedule{
-    border:1px solid var(--outline); border-radius:12px; overflow:hidden
-  }
-  .row2{
-    display:grid; grid-template-columns: 1fr 110px 120px 120px; gap:8px; padding:10px 12px;
-    border-bottom:1px solid var(--outline); align-items:center;
-  }
+  .seg{display:flex; border:1px solid var(--outline); border-radius:12px; overflow:hidden}
+  .seg button{flex:1; padding:12px; background:transparent; border:none; color:var(--ink); font-weight:700}
+  .seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff}
+  .grid2{display:grid; gap:10px}
+  .row2{display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--outline)}
   .row2:last-child{border-bottom:none}
   .badge{font-size:12px; padding:2px 6px; border-radius:999px; border:1px solid var(--outline); color:var(--muted)}
   .badge.paid{background:rgba(47,211,155,.12); border-color: rgba(47,211,155,.35); color: var(--ok)}
-  .right{display:flex; gap:8px; justify-content:flex-end; align-items:center}
   .total{font-weight:800; font-size:18px}
 
-  .hint{font-size:12px;color:var(--muted)}
-  .hr{height:1px;background:var(--outline); margin: 2px 0 0}
-
-  .empty{
-    padding:22px;border:1px dashed var(--outline);border-radius:12px;color:var(--muted);text-align:center
+  /* Bottom action bar */
+  .bottom{
+    position: fixed; left:0; right:0; bottom:0; z-index:60;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(11,15,20,0), rgba(11,15,20,.9) 20%, rgba(11,15,20,.98) 60%);
+    border-top:1px solid var(--outline);
+    display:flex; gap:8px;
   }
-  .link{color:#cfe0ff;text-decoration:none;border-bottom:1px dotted #cfe0ff}
+  .bottom .btn{flex:1}
+
+  /* Mobile-only blocker on wide screens */
+  .desktop-blocker{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center; text-align:center;
+    background:#0b0f14; color:#fff; padding:40px; z-index:1000;
+  }
+  .desktop-blocker p{color:#c3cee3}
+  @media (min-width: 820px){
+    .desktop-blocker{display:flex}
+  }
+
+  .hint{font-size:12px; color:var(--muted)}
+  .hr{height:1px; background:var(--outline); margin: 2px 0 0}
+  .empty{padding:20px; border:1px dashed var(--outline); border-radius:12px; color:var(--muted); text-align:center}
+  .link{color:#cfe0ff; text-decoration:none; border-bottom:1px dotted #cfe0ff}
 </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 2c5.5 0 10 4.5 10 10v2.4c0 1.8-1.4 3.2-3.2 3.2H16a2 2 0 0 1-2-2v-1.5a2.5 2.5 0 1 0-4.9 0V19a3 3 0 0 1-3 3H5.2A3.2 3.2 0 0 1 2 18.8V12C2 6.5 6.5 2 12 2z"/></svg>
-      </div>
-      <div class="title">
-        <h1>Buy Now, Pay Later — Dashboard</h1>
-        <p>Track plans, make payments, and manage autopay.</p>
-      </div>
-    </header>
-
-    <div class="toolbar">
-      <div class="chip">Available to spend: <b id="availChip">$—</b></div>
-      <div class="chip">Total due next 30 days: <b id="dueChip">$—</b></div>
-      <div class="chip">Active plans: <b id="plansChip">—</b></div>
-      <div class="spacer"></div>
-      <button class="btn secondary" id="resetDemo">Reset demo</button>
-      <button class="btn" id="newPlan">New plan</button>
+  <div class="desktop-blocker">
+    <div>
+      <h1>Mobile Only</h1>
+      <p>This dashboard is optimized for phones. Open on a mobile device or use your browser’s mobile preview (≤819px).</p>
     </div>
-
-    <div class="grid">
-      <section class="card col-4">
-        <h3>Present Balance</h3>
-        <div class="big"><span id="presentBalance">$0.00</span> <span class="trend ok" id="balanceTrend">on track</span></div>
-        <div class="sub">Total remaining across all active plans</div>
-        <div style="height:10px"></div>
-        <div class="progress" aria-label="Paydown progress"><span id="paydownBar" style="width:0%"></span></div>
-        <div class="sub" id="paydownSub">0% paid</div>
-      </section>
-
-      <section class="card col-4">
-        <h3>Upcoming Payment</h3>
-        <div class="big"><span id="nextAmount">$0.00</span></div>
-        <div class="sub">Due <span id="nextDate">—</span></div>
-        <div style="height:10px"></div>
-        <button class="btn" id="payNextBtn">Pay next due</button>
-      </section>
-
-      <section class="card col-4">
-        <h3>Rewards & Boosts</h3>
-        <div class="big"><span id="rewards">$0.00</span> <span class="trend warn">beta</span></div>
-        <div class="sub">Earned from on-time payments (demo)</div>
-        <div style="height:10px"></div>
-        <div class="hint">Tip: Paying early improves your utilization and may raise your limit.</div>
-      </section>
-    </div>
-
-    <section class="card" style="margin-top:14px">
-      <h3>Active Plans</h3>
-      <div id="plansList" class="list"></div>
-      <div id="emptyState" class="empty" hidden>No active plans. Click <b>New plan</b> to add a demo loan.</div>
-    </section>
   </div>
 
-  <dialog id="planModal">
-    <div class="modal-head">
-      <div class="logo-sm" id="pmLogo" data-merchant="A"><svg width="18" height="18" viewBox="0 0 24 24" fill="#cfe0ff"><circle cx="12" cy="12" r="8"/></svg></div>
-      <div style="flex:1">
-        <h2 id="pmTitle">Manage Plan</h2>
-        <div class="muted" id="pmSubtitle">—</div>
-      </div>
-      <button class="btn secondary" id="closeModal" style="margin-left:auto">Close</button>
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2c5.5 0 10 4.5 10 10v2.4c0 1.8-1.4 3.2-3.2 3.2H16a2 2 0 0 1-2-2v-1.5a2.5 2.5 0 1 0-4.9 0V19a3 3 0 0 1-3 3H5.2A3.2 3.2 0 0 1 2 18.8V12C2 6.5 6.5 2 12 2z" fill="#fff"/></svg>
     </div>
-    <div class="modal-body">
-      <div class="modal-grid">
+    <div class="tit">
+      <h1>BNPL — Dashboard</h1>
+      <p>Track plans, pay, manage autopay</p>
+    </div>
+  </header>
+
+  <div class="chips" aria-label="Summary">
+    <div class="chip">Available: <b id="availChip">$—</b></div>
+    <div class="chip">Due in 30d: <b id="dueChip">$—</b></div>
+    <div class="chip">Active: <b id="plansChip">—</b></div>
+    <div class="chip">Rewards: <b id="rewardsChip">$—</b></div>
+  </div>
+
+  <main class="wrap" id="app">
+    <section class="card">
+      <h3>Present Balance</h3>
+      <div class="big"><span id="presentBalance">$0.00</span> <span class="trend ok" id="balanceTrend">on track</span></div>
+      <div class="sub">Total remaining across active plans</div>
+      <div style="height:10px"></div>
+      <div class="progress" aria-label="Paydown progress"><span id="paydownBar"></span></div>
+      <div class="sub" id="paydownSub">0% paid</div>
+    </section>
+
+    <section class="card">
+      <h3>Upcoming Payment</h3>
+      <div class="big"><span id="nextAmount">$0.00</span></div>
+      <div class="sub">Due <span id="nextDate">—</span></div>
+      <div style="height:10px"></div>
+      <button class="btn" id="payNextBtn" style="width:100%">Pay next due</button>
+      <div class="hint" style="margin-top:8px">Tip: Early payments may increase your limit.</div>
+    </section>
+
+    <section class="card">
+      <h3>Active Plans</h3>
+      <div id="plansList" class="list"></div>
+      <div id="emptyState" class="empty" hidden>No active plans. Tap <b>New plan</b> to add a demo loan.</div>
+    </section>
+  </main>
+
+  <!-- Bottom action bar -->
+  <div class="bottom">
+    <button class="btn ghost" id="resetDemo">Reset demo</button>
+    <button class="btn" id="newPlan">New plan</button>
+  </div>
+
+  <!-- Fullscreen Modal -->
+  <dialog id="planModal">
+    <div class="sheet">
+      <div class="m-head">
+        <div class="logo-sm" id="pmLogo" data-merchant="A" aria-hidden="true" style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#232b3a">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#cfe0ff"><circle cx="12" cy="12" r="8"/></svg>
+        </div>
+        <div style="flex:1">
+          <h2 id="pmTitle" style="margin:0">Manage Plan</h2>
+          <div class="sub" id="pmSubtitle">—</div>
+        </div>
+        <button class="btn ghost" id="closeModal" style="min-width:64px">Close</button>
+      </div>
+
+      <div class="m-body">
         <section class="card">
           <h3>Make a Payment</h3>
           <div class="field">
             <label>Amount</label>
-            <div style="display:flex;gap:8px;align-items:center">
-              <input type="range" min="0" max="0" value="0" id="amountRange" />
-              <input type="number" id="amountInput" step="0.01" min="0" style="width:130px;padding:8px;border-radius:8px;border:1px solid var(--outline);background:#0f1520;color:#fff" />
-            </div>
+            <input id="amountInput" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" />
+            <input id="amountRange" type="range" min="0" max="0" value="0" />
             <div class="hint">Drag the slider or enter a custom amount.</div>
           </div>
 
@@ -275,53 +255,34 @@
               <button type="button" id="speedStandard" aria-pressed="true">1–2 business days (free)</button>
               <button type="button" id="speedInstant" aria-pressed="false">Instant (fee)</button>
             </div>
-            <div class="hint" id="arrivalHint">Arrives by <span id="arrivalEta">—</span></div>
+            <div class="hint">Arrives by <span id="arrivalEta">—</span></div>
           </div>
 
           <div class="field">
             <label>Summary</label>
-            <div class="row2" style="border:none;padding:0">
-              <div>Payment</div><div></div><div></div><div id="sumPayment" class="right">$0.00</div>
-            </div>
-            <div class="row2" style="border:none;padding:0">
-              <div>Instant fee</div><div></div><div></div><div id="sumFee" class="right">$0.00</div>
-            </div>
+            <div class="row2" style="border:none"><div>Payment</div><div id="sumPayment"><b>$0.00</b></div></div>
+            <div class="row2" style="border:none"><div>Instant fee</div><div id="sumFee">$0.00</div></div>
             <div class="hr"></div>
-            <div class="row2" style="border:none;padding:8px 0 0">
-              <div class="total">Total today</div><div></div><div></div><div id="sumTotal" class="right total">$0.00</div>
-            </div>
+            <div class="row2" style="border:none"><div class="total">Total today</div><div id="sumTotal" class="total">$0.00</div></div>
           </div>
 
-          <div class="right">
-            <button class="btn secondary" id="payMin">Pay minimum</button>
+          <div class="grid2">
+            <button class="btn ghost" id="payMin">Pay minimum</button>
             <button class="btn" id="confirmPay">Confirm & Pay</button>
           </div>
-          <div class="hint">This is a demo—no real money moves.</div>
+          <div class="hint">Demo only — no real money moves.</div>
         </section>
 
         <section class="card">
           <h3>Schedule & Settings</h3>
           <div class="row2" style="border:none">
             <div>Autopay</div>
-            <div></div>
-            <div></div>
-            <div class="right">
-              <div id="pmAuto" class="switch" role="switch" aria-checked="false" tabindex="0"></div>
-            </div>
+            <div><div id="pmAuto" class="switch" role="switch" aria-checked="false" tabindex="0"></div></div>
           </div>
-          <div class="row2" style="border:none">
-            <div>Remaining balance</div><div></div><div></div>
-            <div class="right" id="pmRemaining">$0.00</div>
-          </div>
-          <div class="row2" style="border:none">
-            <div>Next due</div><div></div><div></div>
-            <div class="right" id="pmNextDue">—</div>
-          </div>
-
-          <div style="height:8px"></div>
-          <div class="schedule" id="pmSchedule">
-            <!-- Filled dynamically -->
-          </div>
+          <div class="row2" style="border:none"><div>Remaining</div><div id="pmRemaining"><b>$0.00</b></div></div>
+          <div class="row2" style="border:none"><div>Next due</div><div id="pmNextDue">—</div></div>
+          <div class="hr"></div>
+          <div id="pmSchedule"></div>
         </section>
       </div>
     </div>
@@ -329,99 +290,77 @@
 
 <script>
 (function(){
-  const fmt = new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'});
-  const fmtShortDate = (d)=> new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+  const $ = (q, el=document)=> el.querySelector(q);
+  const fmtMoney = new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'});
+  const fmtDate = (d)=> new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
   const addDays = (d, n)=> { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
   const cap = (v,min,max)=> Math.max(min, Math.min(max, v));
+  const LS_KEY = 'bnpl_mobile_demo_v1';
 
-  // ---- Data ----
-  const LS_KEY = 'bnpl_demo_state_v1';
-  let state = loadState() || seedPlans();
+  let state = load() || seed();
 
-  function seedPlans(){
+  function load(){ try { return JSON.parse(localStorage.getItem(LS_KEY)||''); } catch { return null; } }
+  function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+  function seed(){
     const today = new Date();
-    const mkPlan = (id, merchant, total, installments, firstDueDays=7)=>{
-      const per = +(total/installments).toFixed(2);
-      const schedule = Array.from({length:installments}, (_,i)=>({
+    const mk = (id, merchant, total, n, first=5)=>{
+      const per = +(total/n).toFixed(2);
+      const schedule = Array.from({length:n}, (_,i)=>({
         idx:i+1,
-        amount: i===installments-1 ? +(total - per*(installments-1)).toFixed(2) : per,
-        due: addDays(today, firstDueDays + 14*i).toISOString(),
-        paid: false,
-        paidAt: null
+        amount: i===n-1 ? +(total - per*(n-1)).toFixed(2) : per,
+        due: addDays(today, first + 14*i).toISOString(),
+        paid:false, paidAt:null
       }));
-      return {
-        id, merchant, created: today.toISOString(),
-        total, remaining: total, installments, schedule,
-        autopay: id%2===0, // alternate
-      };
+      return {id, merchant, total, remaining: total, installments:n, schedule, created: today.toISOString(), autopay: id%2===0};
     };
-    const plans = [
-      mkPlan(1,'Amazon', 324.97, 4, 5),
-      mkPlan(2,'Target', 128.40, 4, 3),
-      mkPlan(3,'Nike',   219.00, 3, 9),
-      mkPlan(4,'Spotify', 59.97, 3, 6),
-    ];
-    return { plans, limit: 1500, reserved: 0, rewards: 8.25 };
+    return {plans:[ mk(1,'Amazon',324.97,4,5), mk(2,'Target',128.40,4,3), mk(3,'Nike',219.00,3,9), mk(4,'Spotify',59.97,3,6) ], limit:1500, reserved:0, rewards:8.25};
   }
 
-  function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-  function loadState(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||''); }catch{ return null; } }
+  // Elements
+  const els = {
+    availChip: $('#availChip'), dueChip: $('#dueChip'), plansChip: $('#plansChip'), rewardsChip: $('#rewardsChip'),
+    presentBalance: $('#presentBalance'), paydownBar: $('#paydownBar'), paydownSub: $('#paydownSub'), balanceTrend: $('#balanceTrend'),
+    nextAmount: $('#nextAmount'), nextDate: $('#nextDate'), payNextBtn: $('#payNextBtn'),
+    plansList: $('#plansList'), emptyState: $('#emptyState'),
+    resetDemo: $('#resetDemo'), newPlan: $('#newPlan'),
+  };
 
-  // ---- Derived metrics ----
   function compute(){
     const presentBalance = state.plans.reduce((a,p)=> a + p.remaining, 0);
     const paid = state.plans.reduce((a,p)=> a + (p.total - p.remaining), 0);
     const total = state.plans.reduce((a,p)=> a + p.total, 0);
-    const pct = total? Math.round((paid/total)*100):0;
-
-    const upcoming = [];
+    const pct = total ? Math.round((paid/total)*100) : 0;
+    const up = [];
     state.plans.forEach(p=>{
-      const next = p.schedule.find(s=>!s.paid);
-      if(next) upcoming.push({plan:p, ...next});
+      const nxt = p.schedule.find(s=>!s.paid);
+      if(nxt) up.push({plan:p, ...nxt});
     });
-    upcoming.sort((a,b)=> new Date(a.due)-new Date(b.due));
-    const nextDue = upcoming[0];
-    const next30 = upcoming.filter(x=> (new Date(x.due)-new Date())/86400000 <= 30)
-                           .reduce((a,x)=> a + x.amount, 0);
-
+    up.sort((a,b)=> new Date(a.due)-new Date(b.due));
+    const nextDue = up[0] || null;
+    const next30 = up.filter(x=> (new Date(x.due)-new Date())/86400000 <= 30)
+                     .reduce((a,x)=> a + x.amount, 0);
     return {presentBalance, pct, nextDue, next30};
   }
 
-  // ---- Render ----
-  const $ = (q, el=document)=> el.querySelector(q);
-  const $$ = (q, el=document)=> [...el.querySelectorAll(q)];
-
-  const els = {
-    availChip: $('#availChip'),
-    dueChip: $('#dueChip'),
-    plansChip: $('#plansChip'),
-    presentBalance: $('#presentBalance'),
-    paydownBar: $('#paydownBar'),
-    paydownSub: $('#paydownSub'),
-    nextAmount: $('#nextAmount'),
-    nextDate: $('#nextDate'),
-    rewards: $('#rewards'),
-    payNextBtn: $('#payNextBtn'),
-    plansList: $('#plansList'),
-    emptyState: $('#emptyState'),
-    resetDemo: $('#resetDemo'),
-    newPlan: $('#newPlan'),
-    balanceTrend: $('#balanceTrend'),
-  };
-
   function render(){
     const {presentBalance, pct, nextDue, next30} = compute();
-    els.presentBalance.textContent = fmt.format(presentBalance);
+    els.presentBalance.textContent = fmtMoney.format(presentBalance);
     els.paydownBar.style.width = pct + '%';
     els.paydownSub.textContent = pct + '% paid';
-    els.rewards.textContent = fmt.format(state.rewards||0);
-    els.availChip.textContent = fmt.format(cap(state.limit - presentBalance - (state.reserved||0),0,1e9));
-    els.dueChip.textContent = fmt.format(next30);
+
+    els.availChip.textContent = fmtMoney.format(Math.max(0, state.limit - presentBalance - (state.reserved||0)));
+    els.dueChip.textContent = fmtMoney.format(next30);
     els.plansChip.textContent = state.plans.length;
+    els.rewardsChip.textContent = fmtMoney.format(state.rewards||0);
+
+    if(pct >= 60){ setTrend('ok','on track'); }
+    else if(pct >= 25){ setTrend('warn','keep going'); }
+    else { setTrend('danger','falling behind'); }
 
     if(nextDue){
-      els.nextAmount.textContent = fmt.format(nextDue.amount);
-      els.nextDate.textContent = fmtShortDate(nextDue.due);
+      els.nextAmount.textContent = fmtMoney.format(nextDue.amount);
+      els.nextDate.textContent = fmtDate(nextDue.due);
       els.payNextBtn.disabled = false;
       els.payNextBtn.onclick = ()=> openPlanModal(nextDue.plan.id, nextDue.amount);
     }else{
@@ -430,68 +369,61 @@
       els.payNextBtn.disabled = true;
     }
 
-    // trend
-    if(pct >= 60){ els.balanceTrend.className='trend ok'; els.balanceTrend.textContent='on track'; }
-    else if(pct >= 25){ els.balanceTrend.className='trend warn'; els.balanceTrend.textContent='keep going'; }
-    else { els.balanceTrend.className='trend danger'; els.balanceTrend.textContent='falling behind'; }
-
     renderPlans();
+  }
+
+  function setTrend(type,text){
+    const n = els.balanceTrend;
+    n.className = 'trend ' + type;
+    n.textContent = text;
   }
 
   function renderPlans(){
     const L = state.plans;
     els.plansList.innerHTML = '';
     els.emptyState.hidden = L.length>0;
+
     L.forEach(p=>{
       const next = p.schedule.find(s=>!s.paid);
       const paid = p.total - p.remaining;
       const pct = p.total? Math.round(paid/p.total*100):0;
 
       const row = document.createElement('div');
-      row.className='row';
+      row.className = 'row';
 
-      const t = document.createElement('div');
-      t.className='title';
+      const left = document.createElement('div');
+      left.className = 'left';
+
       const logo = document.createElement('div');
-      logo.className='logo-sm'; logo.dataset.merchant = p.merchant[0].toUpperCase();
+      logo.className = 'logo-sm';
+      logo.dataset.merchant = p.merchant[0].toUpperCase();
       logo.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#cfe0ff"><circle cx="12" cy="12" r="8"/></svg>`;
-      const name = document.createElement('div');
-      name.innerHTML = `<div style="font-weight:700">${p.merchant}</div>
-                        <div class="sub">Plan ${p.installments} · ${fmt.format(p.total)}</div>`;
-      t.append(logo, name);
 
-      const prog = document.createElement('div');
-      prog.innerHTML = `<div class="progress" aria-label="Installment progress"><span style="width:${pct}%"></span></div>
-                        <div class="sub">${Math.round(p.total - p.remaining) ? fmt.format(paid) : '$0.00'} paid • ${pct}%</div>`;
+      const ttl = document.createElement('div');
+      ttl.className = 'title';
+      ttl.innerHTML = `<b>${p.merchant}</b>
+        <div class="sub">Plan ${p.installments} • ${fmtMoney.format(p.total)}</div>
+        <div style="margin-top:8px" class="progress" aria-label="Installment progress"><span style="width:${pct}%"></span></div>
+        <div class="sub" style="margin-top:4px">${fmtMoney.format(Math.max(0, paid))} paid • ${pct}%</div>`;
 
-      const nextDue = document.createElement('div');
-      nextDue.innerHTML = next ? `<span class="pill">Due ${fmtShortDate(next.due)}</span>` : `<span class="pill">Paid off</span>`;
+      left.append(logo, ttl);
 
-      const remaining = document.createElement('div');
-      remaining.innerHTML = `<div style="font-weight:700">${fmt.format(p.remaining)}</div>
-                             <div class="sub">Remaining</div>`;
+      const right = document.createElement('div');
+      right.className = 'right';
+      const due = document.createElement('div');
+      due.innerHTML = next ? `<span class="pill">Due ${fmtDate(next.due)}</span>` : `<span class="pill">Paid off</span>`;
+      const manage = document.createElement('button');
+      manage.className = 'btn'; manage.textContent = 'Manage';
+      manage.onclick = ()=> openPlanModal(p.id, next? next.amount : 0);
 
-      const autop = document.createElement('div');
-      autop.style.display='flex'; autop.style.alignItems='center'; autop.style.gap='8px';
-      const label = document.createElement('div'); label.className='sub'; label.textContent='Autopay';
-      const sw = document.createElement('div'); sw.className='switch'; sw.dataset.on = String(!!p.autopay);
-      sw.setAttribute('role','switch'); sw.setAttribute('aria-checked', String(!!p.autopay));
-      sw.onclick = ()=>{ p.autopay = !p.autopay; sw.dataset.on = String(!!p.autopay); sw.setAttribute('aria-checked', String(!!p.autopay)); saveState(); };
-      autop.append(label, sw);
+      right.append(due, manage);
 
-      const actions = document.createElement('div'); actions.className='actions';
-      const payBtn = document.createElement('button'); payBtn.className='btn ghost'; payBtn.textContent='Pay';
-      payBtn.onclick = ()=> openPlanModal(p.id, next? next.amount : 0);
-      const manageBtn = document.createElement('button'); manageBtn.className='btn'; manageBtn.textContent='Manage';
-      manageBtn.onclick = ()=> openPlanModal(p.id);
-      actions.append(payBtn, manageBtn);
-
-      row.append(t, prog, nextDue, remaining, autop, actions);
+      row.append(left, right);
       els.plansList.append(row);
     });
   }
 
-  // ---- Modal / Pay flow ----
+  // Modal / Pay flow
   const dlg = $('#planModal');
   const pm = {
     title: $('#pmTitle'), subtitle: $('#pmSubtitle'), logo: $('#pmLogo'),
@@ -499,94 +431,81 @@
     auto: $('#pmAuto'),
     range: $('#amountRange'), amount: $('#amountInput'),
     speedStd: $('#speedStandard'), speedInst: $('#speedInstant'),
-    arrival: $('#arrivalEta'),
+    eta: $('#arrivalEta'),
     sumPay: $('#sumPayment'), sumFee: $('#sumFee'), sumTotal: $('#sumTotal'),
     payMin: $('#payMin'), confirm: $('#confirmPay'), close: $('#closeModal'),
   };
-  let modalPlan = null;
-  let speed = 'standard';
+  let modalPlan = null, speed = 'standard';
 
-  function openPlanModal(id, suggestAmount=0){
+  function openPlanModal(id, suggested=0){
     modalPlan = state.plans.find(p=>p.id===id);
     if(!modalPlan) return;
-
     pm.title.textContent = `${modalPlan.merchant} — Plan`;
-    pm.subtitle.textContent = `${modalPlan.installments} installments • ${fmt.format(modalPlan.total)} total`;
+    pm.subtitle.textContent = `${modalPlan.installments} installments • ${fmtMoney.format(modalPlan.total)}`;
     pm.logo.dataset.merchant = modalPlan.merchant[0].toUpperCase();
-    pm.rem.textContent = fmt.format(modalPlan.remaining);
+    pm.rem.innerHTML = `<b>${fmtMoney.format(modalPlan.remaining)}</b>`;
     const next = modalPlan.schedule.find(s=>!s.paid);
-    pm.next.textContent = next? `${fmtShortDate(next.due)} • ${fmt.format(next.amount)}` : 'Paid off';
+    pm.next.textContent = next? `${fmtDate(next.due)} • ${fmtMoney.format(next.amount)}` : 'Paid off';
 
     // schedule
     pm.sched.innerHTML = '';
     modalPlan.schedule.forEach(s=>{
-      const row = document.createElement('div'); row.className='row2';
-      const status = s.paid ? '<span class="badge paid">Paid</span>' : '<span class="badge">Due</span>';
-      row.innerHTML = `
-        <div>#${s.idx} • ${fmtShortDate(s.due)}</div>
-        <div>${status}</div>
-        <div>${s.paidAt? fmtShortDate(s.paidAt) : '—'}</div>
-        <div class="right"><b>${fmt.format(s.amount)}</b></div>
-      `;
-      pm.sched.append(row);
+      const r = document.createElement('div'); r.className='row2';
+      r.innerHTML = `<div>#${s.idx} • ${fmtDate(s.due)} ${s.paid? '<span class="badge paid" style="margin-left:6px">Paid</span>' : ''}</div>
+                     <div><b>${fmtMoney.format(s.amount)}</b></div>`;
+      pm.sched.append(r);
     });
 
     // autopay
     pm.auto.dataset.on = String(!!modalPlan.autopay);
     pm.auto.setAttribute('aria-checked', String(!!modalPlan.autopay));
-    pm.auto.onclick = ()=>{ modalPlan.autopay = !modalPlan.autopay; pm.auto.dataset.on = String(!!modalPlan.autopay); pm.auto.setAttribute('aria-checked', String(!!modalPlan.autopay)); saveState(); };
+    pm.auto.onclick = ()=>{ modalPlan.autopay = !modalPlan.autopay; pm.auto.dataset.on = String(!!modalPlan.autopay); pm.auto.setAttribute('aria-checked', String(!!modalPlan.autopay)); save(); };
 
-    // amount controls
+    // amount
     const max = +modalPlan.remaining.toFixed(2);
     pm.range.max = String(max);
-    pm.range.value = suggestAmount ? String(cap(suggestAmount,0,max)) : String(Math.min((modalPlan.schedule.find(s=>!s.paid)?.amount)||0, max));
+    const start = suggested ? cap(suggested,0,max) : Math.min((modalPlan.schedule.find(s=>!s.paid)?.amount)||0, max);
+    pm.range.value = String(start);
     pm.amount.value = (+pm.range.value || 0).toFixed(2);
 
     speed = 'standard';
     pm.speedStd.setAttribute('aria-pressed','true');
     pm.speedInst.setAttribute('aria-pressed','false');
-
     updateSummary();
-    dlg.showModal();
+
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open'); // iOS 15 fallback
   }
 
   function updateSummary(){
-    const val = cap(parseFloat(pm.amount.value||'0'), 0, parseFloat(pm.range.max||'0'));
+    const max = parseFloat(pm.range.max||'0');
+    const val = cap(parseFloat(pm.amount.value||'0'), 0, max);
     pm.amount.value = isFinite(val) ? val.toFixed(2) : '0.00';
     pm.range.value = String(val);
 
     const fee = speed==='instant' ? +(Math.min(val*0.015, 5).toFixed(2)) : 0;
     const total = +(val + fee).toFixed(2);
-    pm.sumPay.textContent = fmt.format(val);
-    pm.sumFee.textContent = fmt.format(fee);
-    pm.sumTotal.textContent = fmt.format(total);
+    pm.sumPay.innerHTML = `<b>${fmtMoney.format(val)}</b>`;
+    pm.sumFee.textContent = fmtMoney.format(fee);
+    pm.sumTotal.textContent = fmtMoney.format(total);
 
-    // arrival ETA
+    // Arrival ETA
     const base = new Date();
-    let eta;
     if(speed==='instant'){
-      eta = new Date(base.getTime()+ 5*60*1000); // 5 minutes (demo)
-      pm.arrival.textContent = eta.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      const eta = new Date(base.getTime()+ 5*60*1000);
+      pm.eta.textContent = eta.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
     }else{
-      // naïve add 2 business days
-      let d = new Date(base);
-      let added = 0;
-      while(added<2){
-        d.setDate(d.getDate()+1);
-        const day = d.getDay();
-        if(day!==0 && day!==6) added++;
-      }
-      pm.arrival.textContent = fmtShortDate(d);
+      let d = new Date(base), added=0;
+      while(added<2){ d.setDate(d.getDate()+1); const day=d.getDay(); if(day!==0 && day!==6) added++; }
+      pm.eta.textContent = fmtDate(d);
     }
   }
 
-  // Handlers
   pm.range.addEventListener('input', ()=>{ pm.amount.value = (+pm.range.value).toFixed(2); updateSummary(); });
   pm.amount.addEventListener('input', updateSummary);
   pm.speedStd.addEventListener('click', ()=>{ speed='standard'; pm.speedStd.setAttribute('aria-pressed','true'); pm.speedInst.setAttribute('aria-pressed','false'); updateSummary(); });
   pm.speedInst.addEventListener('click', ()=>{ speed='instant'; pm.speedStd.setAttribute('aria-pressed','false'); pm.speedInst.setAttribute('aria-pressed','true'); updateSummary(); });
   pm.payMin.addEventListener('click', ()=>{
-    const next = modalPlan.schedule.find(s=>!s.paid);
+    const next = modalPlan?.schedule.find(s=>!s.paid);
     const target = next ? next.amount : 0;
     pm.range.value = String(target);
     pm.amount.value = target.toFixed(2);
@@ -595,8 +514,6 @@
   pm.confirm.addEventListener('click', ()=>{
     const val = parseFloat(pm.amount.value||'0');
     if(!modalPlan || !val || val<=0) return;
-
-    // apply to schedule oldest-first
     let remaining = val;
     for(const s of modalPlan.schedule){
       if(remaining<=0) break;
@@ -604,53 +521,32 @@
       const pay = Math.min(remaining, s.amount);
       s.amount = +(s.amount - pay).toFixed(2);
       remaining = +(remaining - pay).toFixed(2);
-      if(s.amount <= 0.009){ // treat as paid
-        s.paid = true;
-        s.paidAt = new Date().toISOString();
-        s.amount = 0;
-      }
+      if(s.amount <= 0.009){ s.paid = true; s.paidAt = new Date().toISOString(); s.amount = 0; }
     }
     modalPlan.remaining = modalPlan.schedule.filter(s=>!s.paid).reduce((a,s)=> a + s.amount, 0);
-
-    // tiny rewards demo
-    state.rewards = +( (state.rewards || 0) + Math.min(val*0.01, 1.50) ).toFixed(2);
-
-    saveState();
-    render();
-    openPlanModal(modalPlan.id); // re-render inside
+    state.rewards = +((state.rewards||0) + Math.min(val*0.01, 1.50)).toFixed(2);
+    save(); render(); openPlanModal(modalPlan.id); // refresh modal
   });
-  pm.close.addEventListener('click', ()=> dlg.close());
-  dlg.addEventListener('click', (e)=>{ // click outside to close
-    const rect = dlg.getBoundingClientRect();
-    if(e.clientY < rect.top || e.clientY > rect.bottom || e.clientX < rect.left || e.clientX > rect.right){
-      dlg.close();
-    }
-  });
+  pm.close.addEventListener('click', ()=> { if(dlg.close) dlg.close(); else dlg.removeAttribute('open'); });
 
-  // toolbar
+  // Tool bar actions
   els.resetDemo.addEventListener('click', ()=>{
-    if(confirm('Reset demo data?')){ state = seedPlans(); saveState(); render(); }
+    if(confirm('Reset demo data?')){ state = seed(); save(); render(); }
   });
   els.newPlan.addEventListener('click', ()=>{
-    const merchant = prompt('Merchant name? (e.g., Apple)') || 'Sample Store';
-    const total = parseFloat(prompt('Total purchase amount? (e.g., 199.99)')||'199.99');
+    const m = prompt('Merchant name? (e.g., Apple)') || 'Sample Store';
+    const total = parseFloat(prompt('Total amount? (e.g., 199.99)')||'199.99');
     const n = parseInt(prompt('Number of installments? (e.g., 4)')||'4',10);
     if(!isFinite(total)||!isFinite(n)|| total<=0 || n<=0) return alert('Invalid values.');
-    const nextId = (state.plans.reduce((m,p)=> Math.max(m,p.id),0) + 1) || 1;
-    // build a plan like seed
+    const id = (state.plans.reduce((mx,p)=> Math.max(mx,p.id),0)+1) || 1;
     const today = new Date();
     const per = +(total/n).toFixed(2);
-    const schedule = Array.from({length:n}, (_,i)=>({
-      idx:i+1,
-      amount: i===n-1 ? +(total - per*(n-1)).toFixed(2) : per,
-      due: addDays(today, 7 + 14*i).toISOString(),
-      paid: false, paidAt: null
-    }));
-    state.plans.push({ id:nextId, merchant, created: today.toISOString(), total, remaining: total, installments:n, schedule, autopay:true });
-    saveState(); render();
+    const sched = Array.from({length:n},(_,i)=>({idx:i+1, amount: i===n-1? +(total - per*(n-1)).toFixed(2):per, due: addDays(today, 7+14*i).toISOString(), paid:false, paidAt:null}));
+    state.plans.push({id, merchant:m, total, remaining: total, installments:n, schedule:sched, created: today.toISOString(), autopay:true});
+    save(); render();
   });
 
-  // quick pay next
+  // Pay next quick button
   els.payNextBtn.addEventListener('click', ()=>{
     const up = compute().nextDue;
     if(up) openPlanModal(up.plan.id, up.amount);
