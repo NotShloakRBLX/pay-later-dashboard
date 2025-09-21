@@ -15,10 +15,9 @@
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
-    margin:0; background:
-      radial-gradient(1200px 600px at 80% -20%, rgba(91,140,255,.35), transparent 60%),
-      radial-gradient(900px 500px at -10% 10%, rgba(138,125,255,.30), transparent 60%),
-      var(--bg);
+    margin:0;
+    /* Keep the top background style across the whole page */
+    background: var(--bg);
     color:var(--ink);
     font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
     min-height: 100dvh;
@@ -286,8 +285,10 @@
   const fmtDate = (d)=> new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
   const addDays = (d, n)=> { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
   const cap = (v,min,max)=> Math.max(min, Math.min(max, v));
-  const LS_KEY = 'bnpl_mobile_demo_v1';
-  const EPS = 0.009; // tiny threshold for floating point
+  const EPS = 0.009; // threshold for floating point
+
+  /* Bump storage key to clear any existing loans */
+  const LS_KEY = 'bnpl_mobile_demo_v2';
 
   let state = load() || seed();
   let currentPlan = null; // active plan in modals
@@ -296,18 +297,8 @@
   function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
 
   function seed(){
-    const today = new Date();
-    const mk = (id, merchant, total, n, first=5)=>{
-      const per = +(total/n).toFixed(2);
-      const schedule = Array.from({length:n}, (_,i)=>({
-        idx:i+1,
-        amount: i===n-1 ? +(total - per*(n-1)).toFixed(2) : per,
-        due: addDays(today, first + 14*i).toISOString(),
-        paid:false, paidAt:null
-      }));
-      return {id, merchant, total, remaining: total, installments:n, schedule, created: today.toISOString()};
-    };
-    return {plans:[ mk(1,'Amazon',324.97,4,5), mk(2,'Target',128.40,4,3), mk(3,'Nike',219.00,3,9), mk(4,'Spotify',59.97,3,6) ], limit:1500, reserved:0, rewards:8.25};
+    /* Start with NO loans per request */
+    return {plans:[], limit:1500, reserved:0, rewards:0};
   }
 
   // Elements
