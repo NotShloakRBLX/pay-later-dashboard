@@ -287,6 +287,7 @@
   const addDays = (d, n)=> { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
   const cap = (v,min,max)=> Math.max(min, Math.min(max, v));
   const LS_KEY = 'bnpl_mobile_demo_v1';
+  const EPS = 0.009; // tiny threshold for floating point
 
   let state = load() || seed();
   let currentPlan = null; // active plan in modals
@@ -400,7 +401,6 @@
   /* ---------- Smooth dialog helpers ---------- */
   function openDialog(dlg, animEl){
     if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open');
-    // next frame -> add .open to animate
     requestAnimationFrame(()=> animEl.classList.add('open'));
   }
   function closeDialog(dlg, animEl){
@@ -432,7 +432,6 @@
     const next = currentPlan.schedule.find(s=>!s.paid);
     pl.next.textContent = next? `${fmtDate(next.due)} • ${fmtMoney.format(next.amount)}` : 'Paid off';
 
-    // schedule
     pl.sched.innerHTML = '';
     currentPlan.schedule.forEach(s=>{
       const r = document.createElement('div'); r.className='row2';
@@ -466,7 +465,6 @@
     pay.title.textContent = `Make a Payment`;
     pay.subtitle.textContent = `${currentPlan.merchant} • ${currentPlan.installments} installments • ${fmtMoney.format(currentPlan.total)}`;
 
-    // amount
     const max = +currentPlan.remaining.toFixed(2);
     pay.range.max = String(max);
     const start = suggested ? cap(suggested,0,max) : Math.min((currentPlan.schedule.find(s=>!s.paid)?.amount)||0, max);
@@ -494,7 +492,6 @@
     pay.sumFee.textContent = fmtMoney.format(fee);
     pay.sumTotal.textContent = fmtMoney.format(total);
 
-    // Arrival ETA
     const base = new Date();
     if(speed==='instant'){
       const eta = new Date(base.getTime()+ 5*60*1000);
@@ -529,17 +526,29 @@
       const payAmt = Math.min(remaining, s.amount);
       s.amount = +(s.amount - payAmt).toFixed(2);
       remaining = +(remaining - payAmt).toFixed(2);
-      if(s.amount <= 0.009){ s.paid = true; s.paidAt = new Date().toISOString(); s.amount = 0; }
+      if(s.amount <= EPS){ s.paid = true; s.paidAt = new Date().toISOString(); s.amount = 0; }
     }
     currentPlan.remaining = currentPlan.schedule.filter(s=>!s.paid).reduce((a,s)=> a + s.amount, 0);
-    state.rewards = +((state.rewards||0) + Math.min(val*0.01, 1.50)).toFixed(2);
+
+    // If paid off, remove the plan entirely
+    const paidOff = currentPlan.remaining <= EPS;
+    if(paidOff){
+      state.plans = state.plans.filter(p => p.id !== currentPlan.id);
+      currentPlan = null;
+    }else{
+      state.rewards = +((state.rewards||0) + Math.min(val*0.01, 1.50)).toFixed(2);
+    }
 
     save();
     render();
 
-    // close Pay, reopen/refresh Plan with smooth transitions
+    // Close Pay modal; if plan is gone, also close the Plan modal; otherwise keep behavior
     closeDialog(payDlg, payAnim);
-    setTimeout(()=> openPlanModal(currentPlan.id), 180);
+    if(paidOff){
+      closeDialog(planDlg, planAnim);
+    }else{
+      setTimeout(()=> openPlanModal(state.plans.find(p=>p.id)?.id || undefined), 180);
+    }
   });
 
   /* Toolbar: Add new plan */
