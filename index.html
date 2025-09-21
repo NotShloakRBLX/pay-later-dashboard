@@ -542,12 +542,22 @@
     }
   });
 
-  /* Toolbar: Add new plan */
+  /* Toolbar: Add new plan — cancel-safe prompts */
   els.newPlan.addEventListener('click', ()=>{
-    const m = prompt('Merchant name? (e.g., Apple)') || 'Sample Store';
-    const total = parseFloat(prompt('Total amount? (e.g., 199.99)')||'199.99');
-    const n = parseInt(prompt('Number of installments? (e.g., 4)')||'4',10);
-    if(!isFinite(total)||!isFinite(n)|| total<=0 || n<=0) return alert('Invalid values.');
+    let m = prompt('Merchant name? (e.g., Apple)');
+    if (m === null) return;                          // user cancelled
+    m = m.trim() || 'Sample Store';
+
+    let tStr = prompt('Total amount? (e.g., 199.99)');
+    if (tStr === null) return;                       // user cancelled
+    const total = parseFloat((tStr+'').trim() || '199.99');
+
+    let nStr = prompt('Number of installments? (e.g., 4)');
+    if (nStr === null) return;                       // user cancelled
+    const n = parseInt((nStr+'').trim() || '4', 10);
+
+    if(!isFinite(total)||!isFinite(n)|| total<=0 || n<=0) { alert('Invalid values.'); return; }
+
     const id = (state.plans.reduce((mx,p)=> Math.max(mx,p.id),0)+1) || 1;
     const today = new Date();
     const per = +(total/n).toFixed(2);
