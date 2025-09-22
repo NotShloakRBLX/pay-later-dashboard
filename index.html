@@ -16,13 +16,12 @@
   html,body{height:100%}
   body{
     margin:0;
-    /* Keep the top background style across the whole page */
     background: var(--bg);
     color:var(--ink);
     font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
     min-height: 100dvh;
     padding-top: env(safe-area-inset-top);
-    padding-bottom: calc(env(safe-area-inset-bottom) + 72px); /* room for bottom bar */
+    padding-bottom: calc(env(safe-area-inset-bottom) + 72px);
     overflow-x:hidden;
     touch-action: manipulation;
   }
@@ -30,7 +29,6 @@
     *{animation:none!important; transition:none!important}
   }
 
-  /* Header */
   header{
     position: sticky; top: 0; z-index: 50;
     background: linear-gradient(180deg, rgba(11,15,20,.95), rgba(11,15,20,.75));
@@ -48,7 +46,6 @@
   .tit h1{margin:0;font-size:18px; letter-spacing:.2px}
   .tit p{margin:2px 0 0; color:var(--muted); font-size:12px}
 
-  /* Content */
   .wrap{padding: 10px 14px 14px; display:grid; gap:12px}
   .card{
     background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
@@ -59,9 +56,8 @@
   .sub{color:var(--muted); font-size:13px}
   .progress{height:10px;border-radius:999px;background:#0f1622;border:1px solid #213047; overflow:hidden}
   .progress > span{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand2)); transition:width var(--t)}
-  #paydownSub{margin-top:10px} /* moved slightly lower */
+  #paydownSub{margin-top:10px}
 
-  /* Plans list — less cramped */
   .list{display:grid; gap:12px}
   .row{
     display:grid; gap:12px; grid-template-columns: 1fr auto; align-items:center;
@@ -89,7 +85,6 @@
   .btn:active{transform:translateY(1px)}
   .ghost{background:transparent; border-color:var(--outline); color:#e8eef9; box-shadow:none}
 
-  /* Fullscreen mobile modal */
   dialog{
     border:none; padding:0; width:100vw; max-width:100vw; height:100dvh; max-height:100dvh;
     background:var(--card); color:var(--ink);
@@ -97,7 +92,6 @@
   dialog::backdrop{background: rgba(5,9,14,.6); backdrop-filter: blur(6px)}
   .sheet{display:grid; grid-template-rows: auto 1fr; height:100%}
 
-  /* Smooth slide/fade for dialogs */
   .dialog-anim{opacity:0; transform: translateY(16px); transition: opacity var(--t), transform var(--t)}
   .dialog-anim.open{opacity:1; transform:none}
   .dialog-anim.closing{opacity:0; transform: translateY(16px)}
@@ -125,7 +119,6 @@
   .badge.paid{background:rgba(47,211,155,.12); border-color: rgba(47,211,155,.35); color: var(--ok)}
   .total{font-weight:800; font-size:18px}
 
-  /* Bottom action bar — centered single button */
   .bottom{
     position: fixed; left:0; right:0; bottom:0; z-index:60;
     padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
@@ -135,7 +128,6 @@
   }
   #newPlan{min-width: 240px}
 
-  /* Mobile-only blocker on wide screens */
   .desktop-blocker{
     position:fixed; inset:0; display:none; align-items:center; justify-content:center; text-align:center;
     background:#0b0f14; color:#fff; padding:40px; z-index:1000;
@@ -195,12 +187,10 @@
     </section>
   </main>
 
-  <!-- Bottom action bar (only New plan) -->
   <div class="bottom">
     <button class="btn" id="newPlan">New plan</button>
   </div>
 
-  <!-- PLAN MODAL: Schedule & Settings FIRST; Make a Payment button below -->
   <dialog id="planModal">
     <div class="sheet dialog-anim" id="planAnim">
       <div class="m-head">
@@ -230,7 +220,7 @@
     </div>
   </dialog>
 
-  <!-- PAY MODAL: standalone "Make a Payment" pop-up -->
+  <!-- PAY MODAL -->
   <dialog id="payModal">
     <div class="sheet dialog-anim" id="payAnim">
       <div class="m-head">
@@ -251,13 +241,10 @@
             <div class="hint">Drag the slider or enter a custom amount.</div>
           </div>
 
+          <!-- Speed selector removed; always instant, no fee -->
           <div class="field">
             <label>Speed</label>
-            <div class="seg" role="tablist" aria-label="Payment speed">
-              <button type="button" id="paySpeedStandard" aria-pressed="true">1–2 business days (free)</button>
-              <button type="button" id="paySpeedInstant" aria-pressed="false">Instant (fee)</button>
-            </div>
-            <div class="hint">Arrives by <span id="payArrivalEta">—</span></div>
+            <div class="hint">Arrives <span id="payArrivalEta">instantly</span></div>
           </div>
 
           <div class="field">
@@ -268,8 +255,8 @@
             <div class="row2" style="border:none"><div class="total">Total today</div><div id="paySumTotal" class="total">$0.00</div></div>
           </div>
 
+          <!-- Pay minimum button removed -->
           <div class="grid2">
-            <button class="btn ghost" id="payPayMin">Pay minimum</button>
             <button class="btn" id="payConfirm">Confirm & Pay</button>
           </div>
           <div class="hint">Demo only — no real money moves.</div>
@@ -285,28 +272,20 @@
   const fmtDate = (d)=> new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
   const addDays = (d, n)=> { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
   const cap = (v,min,max)=> Math.max(min, Math.min(max, v));
-  const EPS = 0.009; // threshold for floating point
-
-  /* Bump storage key to clear any existing loans */
+  const EPS = 0.009;
   const LS_KEY = 'bnpl_mobile_demo_v2';
 
   let state = load() || seed();
-  let currentPlan = null; // active plan in modals
+  let currentPlan = null;
 
   function load(){ try { return JSON.parse(localStorage.getItem(LS_KEY)||''); } catch { return null; } }
   function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  function seed(){ return {plans:[], limit:1500, reserved:0, rewards:0}; }
 
-  function seed(){
-    /* Start with NO loans per request */
-    return {plans:[], limit:1500, reserved:0, rewards:0};
-  }
-
-  // Elements
   const els = {
     presentBalance: $('#presentBalance'), paydownBar: $('#paydownBar'), paydownSub: $('#paydownSub'),
     nextAmount: $('#nextAmount'), nextDate: $('#nextDate'), payNextBtn: $('#payNextBtn'),
-    plansList: $('#plansList'), emptyState: $('#emptyState'),
-    newPlan: $('#newPlan'),
+    plansList: $('#plansList'), emptyState: $('#emptyState'), newPlan: $('#newPlan'),
   };
 
   function compute(){
@@ -340,7 +319,6 @@
       els.nextDate.textContent = '—';
       els.payNextBtn.disabled = true;
     }
-
     renderPlans();
   }
 
@@ -383,13 +361,11 @@
       manage.onclick = ()=> openPlanModal(p.id, next? next.amount : 0);
 
       right.append(due, manage);
-
       row.append(left, right);
       els.plansList.append(row);
     });
   }
 
-  /* ---------- Smooth dialog helpers ---------- */
   function openDialog(dlg, animEl){
     if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open');
     requestAnimationFrame(()=> animEl.classList.add('open'));
@@ -404,7 +380,6 @@
     });
   }
 
-  /* ---------- PLAN MODAL (schedule-first) ---------- */
   const planDlg = $('#planModal'), planAnim = $('#planAnim');
   const pl = {
     title: $('#pmTitle'), subtitle: $('#pmSubtitle'), logo: $('#pmLogo'),
@@ -437,17 +412,14 @@
     openDialog(planDlg, planAnim);
   }
 
-  /* ---------- PAY MODAL (standalone) ---------- */
   const payDlg = $('#payModal'), payAnim = $('#payAnim');
   const pay = {
     title: $('#payTitle'), subtitle: $('#paySubtitle'),
     range: $('#payAmountRange'), amount: $('#payAmountInput'),
-    speedStd: $('#paySpeedStandard'), speedInst: $('#paySpeedInstant'),
     eta: $('#payArrivalEta'),
     sumPay: $('#paySumPayment'), sumFee: $('#paySumFee'), sumTotal: $('#paySumTotal'),
-    payMin: $('#payPayMin'), confirm: $('#payConfirm'), close: $('#closePay'),
+    confirm: $('#payConfirm'), close: $('#closePay'),
   };
-  let speed = 'standard';
 
   function openPayModal(id, suggested=0){
     currentPlan = state.plans.find(p=>p.id===id);
@@ -462,9 +434,6 @@
     pay.range.value = String(start);
     pay.amount.value = (+pay.range.value || 0).toFixed(2);
 
-    speed = 'standard';
-    pay.speedStd.setAttribute('aria-pressed','true');
-    pay.speedInst.setAttribute('aria-pressed','false');
     updatePaySummary();
 
     pay.close.onclick = ()=> closeDialog(payDlg, payAnim);
@@ -477,39 +446,21 @@
     pay.amount.value = isFinite(val) ? val.toFixed(2) : '0.00';
     pay.range.value = String(val);
 
-    const fee = speed==='instant' ? +(Math.min(val*0.015, 5).toFixed(2)) : 0;
+    const fee = 0; // always instant, no fee
     const total = +(val + fee).toFixed(2);
     pay.sumPay.innerHTML = `<b>${fmtMoney.format(val)}</b>`;
     pay.sumFee.textContent = fmtMoney.format(fee);
     pay.sumTotal.textContent = fmtMoney.format(total);
-
-    const base = new Date();
-    if(speed==='instant'){
-      const eta = new Date(base.getTime()+ 5*60*1000);
-      pay.eta.textContent = eta.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
-    }else{
-      let d = new Date(base), added=0;
-      while(added<2){ d.setDate(d.getDate()+1); const day=d.getDay(); if(day!==0 && day!==6) added++; }
-      pay.eta.textContent = fmtDate(d);
-    }
+    pay.eta.textContent = 'instantly';
   }
 
   pay.range.addEventListener('input', ()=>{ pay.amount.value = (+pay.range.value).toFixed(2); updatePaySummary(); });
   pay.amount.addEventListener('input', updatePaySummary);
-  pay.speedStd.addEventListener('click', ()=>{ speed='standard'; pay.speedStd.setAttribute('aria-pressed','true'); pay.speedInst.setAttribute('aria-pressed','false'); updatePaySummary(); });
-  pay.speedInst.addEventListener('click', ()=>{ speed='instant'; pay.speedStd.setAttribute('aria-pressed','false'); pay.speedInst.setAttribute('aria-pressed','true'); updatePaySummary(); });
-  pay.payMin.addEventListener('click', ()=>{
-    const next = currentPlan?.schedule.find(s=>!s.paid);
-    const target = next ? next.amount : 0;
-    pay.range.value = String(target);
-    pay.amount.value = target.toFixed(2);
-    updatePaySummary();
-  });
+
   pay.confirm.addEventListener('click', ()=>{
     const val = parseFloat(pay.amount.value||'0');
     if(!currentPlan || !val || val<=0) return;
 
-    // Apply payment oldest-first
     let remaining = val;
     for(const s of currentPlan.schedule){
       if(remaining<=0) break;
@@ -521,7 +472,6 @@
     }
     currentPlan.remaining = currentPlan.schedule.filter(s=>!s.paid).reduce((a,s)=> a + s.amount, 0);
 
-    // If paid off, remove the plan entirely
     const paidOff = currentPlan.remaining <= EPS;
     if(paidOff){
       state.plans = state.plans.filter(p => p.id !== currentPlan.id);
@@ -533,7 +483,6 @@
     save();
     render();
 
-    // Close Pay modal; if plan is gone, also close the Plan modal; otherwise keep behavior
     closeDialog(payDlg, payAnim);
     if(paidOff){
       closeDialog(planDlg, planAnim);
@@ -542,18 +491,17 @@
     }
   });
 
-  /* Toolbar: Add new plan — cancel-safe prompts */
   els.newPlan.addEventListener('click', ()=>{
     let m = prompt('Merchant name? (e.g., Apple)');
-    if (m === null) return;                          // user cancelled
+    if (m === null) return;
     m = m.trim() || 'Sample Store';
 
     let tStr = prompt('Total amount? (e.g., 199.99)');
-    if (tStr === null) return;                       // user cancelled
+    if (tStr === null) return;
     const total = parseFloat((tStr+'').trim() || '199.99');
 
     let nStr = prompt('Number of installments? (e.g., 4)');
-    if (nStr === null) return;                       // user cancelled
+    if (nStr === null) return;
     const n = parseInt((nStr+'').trim() || '4', 10);
 
     if(!isFinite(total)||!isFinite(n)|| total<=0 || n<=0) { alert('Invalid values.'); return; }
@@ -566,7 +514,6 @@
     save(); render();
   });
 
-  // Pay next quick button (kept)
   els.payNextBtn.addEventListener('click', ()=>{
     const up = compute().nextDue;
     if(up) openPlanModal(up.plan.id, up.amount);
